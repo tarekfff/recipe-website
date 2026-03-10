@@ -1,23 +1,17 @@
-import { prisma } from '@/lib/db'
+import { mockChefs } from '@/lib/mock-data'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { ChefHat, Clock, Star } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 
-export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
     title: 'Our Chefs',
     description: 'Meet the talented chefs behind our recipes.',
 }
 
 export default async function ChefsPage() {
-    const chefs = await prisma.chef.findMany({
-        orderBy: { name: 'asc' },
-        include: {
-            _count: { select: { recipes: { where: { status: 'PUBLISHED', deletedAt: null } } } },
-        },
-    })
+    const chefs = mockChefs
 
     return (
         <div className="min-h-screen bg-cream">

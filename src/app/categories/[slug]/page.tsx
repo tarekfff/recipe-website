@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db'
+import { getCategoryBySlug } from '@/lib/mock-data'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
@@ -10,7 +10,7 @@ type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params
-    const cat = await prisma.category.findUnique({ where: { slug } })
+    const cat = getCategoryBySlug(slug)
     if (!cat) return { title: 'Category Not Found' }
     return {
         title: `${cat.name} Recipes`,
@@ -18,24 +18,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 }
 
-export const dynamic = 'force-dynamic'
-
 export default async function CategoryDetailPage({ params }: Props) {
     const { slug } = await params
 
-    const category = await prisma.category.findUnique({
-        where: { slug },
-        include: {
-            recipes: {
-                where: { status: 'PUBLISHED', deletedAt: null },
-                orderBy: { viewCount: 'desc' },
-                include: {
-                    feedback: { where: { status: 'APPROVED' }, select: { rating: true } },
-                    chef: { select: { name: true } },
-                },
-            },
-        },
-    })
+    const category = getCategoryBySlug(slug)
 
     if (!category) notFound()
 
@@ -73,7 +59,7 @@ export default async function CategoryDetailPage({ params }: Props) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                         {category.recipes.map((recipe) => {
                             const avgRating = recipe.feedback.length > 0
-                                ? recipe.feedback.reduce((s, f) => s + f.rating, 0) / recipe.feedback.length
+                                ? recipe.feedback.reduce((s: number, f: any) => s + f.rating, 0) / recipe.feedback.length
                                 : null
                             return (
                                 <Link key={recipe.slug} href={`/recipes/${recipe.slug}`}

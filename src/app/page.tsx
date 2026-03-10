@@ -1,36 +1,19 @@
-import { prisma } from '@/lib/db'
+import { getFeaturedRecipes, mockCategories, mockChefs } from '@/lib/mock-data'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { Clock, ChefHat, Star, ArrowRight, Flame, BookOpen } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
     title: 'Recipe Platform — Discover Amazing Recipes',
     description: 'Explore hundreds of carefully crafted recipes from talented chefs around the world.',
 }
 
-async function getHomeData() {
-    const [featuredRecipes, categories, chefCount] = await Promise.all([
-        prisma.recipe.findMany({
-            where: { status: 'PUBLISHED', deletedAt: null },
-            orderBy: { viewCount: 'desc' },
-            take: 6,
-            include: {
-                category: { select: { name: true, slug: true } },
-                chef: { select: { name: true } },
-                feedback: { where: { status: 'APPROVED' }, select: { rating: true } },
-            },
-        }),
-        prisma.category.findMany({
-            orderBy: { order: 'asc' },
-            take: 8,
-            include: { _count: { select: { recipes: { where: { status: 'PUBLISHED', deletedAt: null } } } } },
-        }),
-        prisma.chef.count(),
-    ])
+function getHomeData() {
+    const featuredRecipes = getFeaturedRecipes(6)
+    const categories = mockCategories
+    const chefCount = mockChefs.length
     return { featuredRecipes, categories, chefCount }
 }
 
@@ -186,7 +169,7 @@ export default async function HomePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {featuredRecipes.map((recipe, i) => {
                         const avgRating = recipe.feedback.length > 0
-                            ? recipe.feedback.reduce((s, f) => s + f.rating, 0) / recipe.feedback.length
+                            ? recipe.feedback.reduce((s: number, f: any) => s + f.rating, 0) / recipe.feedback.length
                             : null
                         const isLarge = i === 0
 

@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db'
+import { getChefBySlug } from '@/lib/mock-data'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
@@ -10,29 +10,15 @@ type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params
-    const chef = await prisma.chef.findUnique({ where: { slug } })
+    const chef = getChefBySlug(slug)
     if (!chef) return { title: 'Chef Not Found' }
     return { title: `${chef.name} — Recipes`, description: chef.bio || `Recipes by ${chef.name}` }
 }
 
-export const dynamic = 'force-dynamic'
-
 export default async function ChefProfilePage({ params }: Props) {
     const { slug } = await params
 
-    const chef = await prisma.chef.findUnique({
-        where: { slug },
-        include: {
-            recipes: {
-                where: { status: 'PUBLISHED', deletedAt: null },
-                orderBy: { viewCount: 'desc' },
-                include: {
-                    category: { select: { name: true, slug: true } },
-                    feedback: { where: { status: 'APPROVED' }, select: { rating: true } },
-                },
-            },
-        },
-    })
+    const chef = getChefBySlug(slug)
 
     if (!chef) notFound()
 
@@ -71,7 +57,7 @@ export default async function ChefProfilePage({ params }: Props) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {chef.recipes.map((recipe) => {
                             const avgRating = recipe.feedback.length > 0
-                                ? recipe.feedback.reduce((s, f) => s + f.rating, 0) / recipe.feedback.length
+                                ? recipe.feedback.reduce((s: number, f: any) => s + f.rating, 0) / recipe.feedback.length
                                 : null
                             return (
                                 <Link key={recipe.slug} href={`/recipes/${recipe.slug}`}

@@ -1,23 +1,17 @@
-import { prisma } from '@/lib/db'
+import { mockCategories } from '@/lib/mock-data'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { FolderOpen, ArrowRight } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 
-export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
     title: 'Recipe Categories',
     description: 'Browse all recipe categories — from quick weeknight meals to indulgent desserts.',
 }
 
 export default async function CategoriesPage() {
-    const categories = await prisma.category.findMany({
-        orderBy: { order: 'asc' },
-        include: {
-            _count: { select: { recipes: { where: { status: 'PUBLISHED', deletedAt: null } } } },
-        },
-    })
+    const categories = mockCategories
 
     return (
         <div className="min-h-screen bg-cream">

@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db'
+import { filterRecipes, mockCategories } from '@/lib/mock-data'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
@@ -7,8 +7,6 @@ import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 
 export const metadata: Metadata = { title: 'All Recipes' }
-
-export const dynamic = 'force-dynamic'
 
 export default async function RecipesPage({
     searchParams,
@@ -19,34 +17,14 @@ export default async function RecipesPage({
     const page = Math.max(1, parseInt(sp.page || '1'))
     const LIMIT = 12
 
-    const where = {
-        status: 'PUBLISHED' as const,
-        deletedAt: null,
-        ...(sp.category && { category: { slug: sp.category } }),
-        ...(sp.difficulty && { difficulty: sp.difficulty as 'EASY' | 'MEDIUM' | 'HARD' }),
-        ...(sp.q && {
-            OR: [
-                { title: { contains: sp.q, mode: 'insensitive' as const } },
-                { description: { contains: sp.q, mode: 'insensitive' as const } },
-            ],
-        }),
-    }
-
-    const [total, recipes, categories] = await Promise.all([
-        prisma.recipe.count({ where }),
-        prisma.recipe.findMany({
-            where, skip: (page - 1) * LIMIT, take: LIMIT,
-            orderBy: { publishedAt: 'desc' },
-            include: {
-                category: { select: { name: true, slug: true } },
-                chef: { select: { name: true } },
-                feedback: { where: { status: 'APPROVED' }, select: { rating: true } },
-            },
-        }),
-        prisma.category.findMany({ orderBy: { order: 'asc' }, select: { slug: true, name: true } }),
-    ])
-
-    const pages = Math.ceil(total / LIMIT)
+    const { recipes, total, pages } = filterRecipes({
+        category: sp.category,
+        difficulty: sp.difficulty,
+        q: sp.q,
+        page,
+        limit: LIMIT,
+    })
+    const categories = mockCategories
 
     return (
         <div className="min-h-screen bg-cream">
@@ -82,7 +60,7 @@ export default async function RecipesPage({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                     {recipes.map((recipe) => {
                         const avgRating = recipe.feedback.length > 0
-                            ? recipe.feedback.reduce((s, f) => s + f.rating, 0) / recipe.feedback.length
+                            ? recipe.feedback.reduce((s: number, f: any) => s + f.rating, 0) / recipe.feedback.length
                             : null
                         return (
                             <Link key={recipe.slug} href={`/recipes/${recipe.slug}`}

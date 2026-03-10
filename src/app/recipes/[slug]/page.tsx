@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db'
+import { getRecipeBySlug, getRelatedRecipes, getSidebarFavs, mockRecipes } from '@/lib/mock-data'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -15,10 +15,7 @@ type Props = { params: Promise<{ slug: string }> }
 // ─── SEO / Metadata ────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const recipe = await prisma.recipe.findUnique({
-    where: { slug, status: 'PUBLISHED', deletedAt: null },
-    include: { seo: true, category: true, chef: true },
-  })
+  const recipe = getRecipeBySlug(slug)
   if (!recipe) return { title: 'Recipe Not Found' }
 
   const title = recipe.seo?.metaTitle || recipe.title
@@ -29,7 +26,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     keywords: recipe.seo?.keywords || [],
     authors: recipe.chef ? [{ name: recipe.chef.name }] : [],
-    // Canonical handled by Next.js automatically via the route
     openGraph: {
       title: recipe.title,
       description,
@@ -47,81 +43,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       images: recipe.featuredImage ? [recipe.featuredImage] : [],
     },
-    // RankMath-compatible: robots meta
-    robots: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
+    robots: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' as const, 'max-video-preview': -1 },
   }
 }
 
-export async function generateStaticParams() {
-  try {
-    const recipes = await prisma.recipe.findMany({
-      where: { status: 'PUBLISHED', deletedAt: null },
-      select: { slug: true },
-    })
-    return recipes.map((r) => ({ slug: r.slug }))
-  } catch {
-    return []
-  }
+export function generateStaticParams() {
+  return mockRecipes.map((r) => ({ slug: r.slug }))
 }
-
-export const revalidate = 60
 
 // ─── Page Component ────────────────────────────────────────────────────────────
 export default async function RecipePage({ params }: Props) {
   const { slug } = await params
 
-  const recipe = await prisma.recipe.findUnique({
-    where: { slug, status: 'PUBLISHED', deletedAt: null },
-    include: {
-      category: { select: { name: true, slug: true } },
-      chef: true,
-      tags: true,
-      images: { orderBy: { order: 'asc' } },
-      seo: true,
-      feedback: {
-        where: { status: 'APPROVED' },
-        orderBy: { createdAt: 'desc' },
-      },
-    },
-  })
+  const recipe = getRecipeBySlug(slug) as any
 
   if (!recipe) notFound()
 
-  // Increment view count (fire-and-forget)
-  await prisma.recipe.update({
-    where: { id: recipe.id },
-    data: { viewCount: { increment: 1 } },
-  }).catch(() => { })
-
   // Related recipes (bottom of page, same category)
-  const related = await prisma.recipe.findMany({
-    where: {
-      categoryId: recipe.categoryId,
-      status: 'PUBLISHED',
-      deletedAt: null,
-      NOT: { id: recipe.id },
-    },
-    take: 3,
-    orderBy: { viewCount: 'desc' },
-    include: {
-      feedback: { where: { status: 'APPROVED' }, select: { rating: true } },
-    },
-  })
+  const related = getRelatedRecipes(recipe.id, recipe.categoryId, 3)
 
   // Sidebar Favorites (overall popular, excluding current)
-  const sidebarFavs = await prisma.recipe.findMany({
-    where: {
-      status: 'PUBLISHED',
-      deletedAt: null,
-      NOT: { id: recipe.id },
-    },
-    take: 4,
-    orderBy: { viewCount: 'desc' },
-  })
+  const sidebarFavs = getSidebarFavs(recipe.id, 4)
 
   // Derived values
   const avgRating = recipe.feedback.length > 0
-    ? recipe.feedback.reduce((s, f) => s + f.rating, 0) / recipe.feedback.length
+    ? recipe.feedback.reduce((s: number, f: any) => s + f.rating, 0) / recipe.feedback.length
     : null
   const totalTime = recipe.prepTime + recipe.cookTime
   const ingredients = recipe.ingredients as { name: string; amount: string; unit: string }[]
@@ -145,8 +91,8 @@ export default async function RecipePage({ params }: Props) {
     totalTime: `PT${totalTime}M`,
     recipeYield: `${recipe.servings} servings`,
     recipeCategory: recipe.category.name,
-    recipeCuisine: recipe.tags?.find(t => t.slug?.includes('cuisine'))?.name,
-    keywords: recipe.tags?.map(t => t.name).join(', '),
+    recipeCuisine: recipe.tags?.find((t: any) => t.slug?.includes('cuisine'))?.name,
+    keywords: recipe.tags?.map((t: any) => t.name).join(', '),
     recipeIngredient: ingredients.map(i => `${i.amount} ${i.unit} ${i.name}`.trim()),
     recipeInstructions: instructions.map(s => ({
       '@type': 'HowToStep',
@@ -253,7 +199,7 @@ export default async function RecipePage({ params }: Props) {
             <Link href={`/categories/${recipe.category.slug}`} className="rp-category-pill">
               {recipe.category.name}
             </Link>
-            {recipe.tags.slice(0, 2).map(t => (
+            {recipe.tags.slice(0, 2).map((t: any) => (
               <span key={t.slug} className="rp-tag-pill">{t.name}</span>
             ))}
           </div>
@@ -368,7 +314,7 @@ export default async function RecipePage({ params }: Props) {
               {/* Extra images gallery */}
               {recipe.images.length > 0 && (
                 <div className="rp-gallery" role="list" aria-label="Recipe photos">
-                  {recipe.images.slice(0, 4).map((img) => (
+                  {recipe.images.slice(0, 4).map((img: any) => (
                     <div key={img.id} className="rp-gallery-item" role="listitem">
                       <Image src={img.url} alt={img.alt || recipe.title} fill className="object-cover" />
                     </div>
@@ -488,7 +434,7 @@ export default async function RecipePage({ params }: Props) {
                     )}
                   </div>
                   <div className="rp-reviews-list" role="list">
-                    {recipe.feedback.slice(0, 5).map((r) => (
+                    {recipe.feedback.slice(0, 5).map((r: any) => (
                       <article key={r.id} className="rp-review-card" role="listitem">
                         <header className="rp-review-header">
                           <div>
@@ -600,7 +546,7 @@ export default async function RecipePage({ params }: Props) {
                 <div className="rp-tags-card">
                   <h3 className="rp-sidebar-section-title">Tags</h3>
                   <ul className="rp-tags-list" role="list" aria-label="Recipe tags">
-                    {recipe.tags.map(t => (
+                    {recipe.tags.map((t: any) => (
                       <li key={t.slug}>
                         <Link href={`/tags/${t.slug}`} className="rp-tag-link">{t.name}</Link>
                       </li>
@@ -637,7 +583,7 @@ export default async function RecipePage({ params }: Props) {
               <div className="rp-related-grid" role="list">
                 {related.map((r) => {
                   const rAvg = r.feedback.length > 0
-                    ? r.feedback.reduce((s, f) => s + f.rating, 0) / r.feedback.length
+                    ? r.feedback.reduce((s: number, f: any) => s + f.rating, 0) / r.feedback.length
                     : null
                   return (
                     <Link key={r.slug} href={`/recipes/${r.slug}`} className="rp-related-card" role="listitem">
