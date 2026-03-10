@@ -1,0 +1,243 @@
+// prisma/schema.prisma — Prisma v6 compatible (no url in datasource)
+// For Prisma 7: url is configured via prisma.config.ts
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Status {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum FeedbackStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NewsletterStatus {
+  ACTIVE
+  UNSUBSCRIBED
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+}
+
+// ─── Models ────────────────────────────────────────────────────────────────────
+
+model User {
+  id          String     @id @default(cuid())
+  email       String     @unique
+  password    String
+  name        String
+  role        Role       @default(EDITOR)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  auditLogs   AuditLog[]
+  apiKeys     ApiKey[]
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  name        String
+  keyHash     String    @unique
+  prefix      String
+  scopes      String[]
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime?
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Recipe {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  title           String
+  titleAr         String?
+  description     String
+  descriptionAr   String?
+  content         String?       // AI-generated HTML blog content (like a WordPress post body)
+  ingredients     Json
+  instructions    Json
+  prepTime        Int
+  cookTime        Int
+  servings        Int
+  difficulty      Difficulty
+  calories        Int?
+  featuredImage   String?
+  videoUrl        String?
+  status          Status        @default(DRAFT)
+  viewCount       Int           @default(0)
+  publishedAt     DateTime?
+  deletedAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  categoryId      String
+  category        Category      @relation(fields: [categoryId], references: [id])
+  chefId          String?
+  chef            Chef?         @relation(fields: [chefId], references: [id])
+  tags            Tag[]
+  feedback        Feedback[]
+  seo             RecipeSEO?
+  images          RecipeImage[]
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  nameAr      String?
+  description String?
+  image       String?
+  order       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  recipes     Recipe[]
+  seo         CategorySEO?
+}
+
+model Chef {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  bio         String?
+  avatar      String?
+  social      Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  recipes     Recipe[]
+}
+
+model Tag {
+  id       String   @id @default(cuid())
+  name     String   @unique
+  slug     String   @unique
+  recipes  Recipe[]
+}
+
+model Feedback {
+  id        String         @id @default(cuid())
+  recipeId  String
+  recipe    Recipe         @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  rating    Int
+  comment   String
+  status    FeedbackStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+}
+
+model RecipeImage {
+  id        String   @id @default(cuid())
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String?
+  order     Int      @default(0)
+}
+
+model RecipeSEO {
+  id              String   @id @default(cuid())
+  recipeId        String   @unique
+  recipe          Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  metaTitle       String?
+  metaDescription String?
+  focusKeyword    String?
+  keywords        String[]
+  ogImage         String?
+  canonicalUrl    String?
+  noIndex         Boolean  @default(false)
+  schemaEnabled   Boolean  @default(true)
+}
+
+model CategorySEO {
+  id              String    @id @default(cuid())
+  categoryId      String    @unique
+  category        Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  metaTitle       String?
+  metaDescription String?
+  focusKeyword    String?
+}
+
+model Newsletter {
+  id           String           @id @default(cuid())
+  email        String           @unique
+  name         String?
+  status       NewsletterStatus @default(ACTIVE)
+  subscribedAt DateTime         @default(now())
+}
+
+model NewsletterCampaign {
+  id        String         @id @default(cuid())
+  subject   String
+  body      String
+  sentAt    DateTime?
+  sentCount Int            @default(0)
+  status    CampaignStatus @default(DRAFT)
+  createdAt DateTime       @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  action     String
+  resource   String
+  resourceId String
+  changes    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+}
+
+model ErrorLog {
+  id        String   @id @default(cuid())
+  level     String
+  message   String
+  stack     String?
+  context   Json?
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id              String   @id @default("singleton")
+  siteName        String   @default("Recipe Platform")
+  siteUrl         String   @default("http://localhost:3000")
+  logo            String?
+  favicon         String?
+  defaultLanguage String   @default("en")
+  maintenanceMode Boolean  @default(false)
+  analyticsId     String?
+  socialLinks     Json?
+  updatedAt       DateTime @updatedAt
+}

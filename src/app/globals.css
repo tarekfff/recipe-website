@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand: #ee8520;
+  --brand-dark: #b94e14;
+  --sage: #698e54;
+  --cream: #fef9ee;
+  --charcoal: #1a1a1a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--charcoal);
+}
+
+.font-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: var(--brand); border-radius: 3px; }
+
+/* Admin sidebar transitions */
+.sidebar-link {
+  @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors;
+}
+.sidebar-link:hover { @apply bg-brand-100 text-brand-700; }
+.sidebar-link.active { @apply bg-brand-500 text-white; }
+
+/* Skeleton loader */
+.skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+/* Homepage nav links */
+.nav-link {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #555;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-link:hover {
+  background: #fff3e0;
+  color: #b94e14;
+}

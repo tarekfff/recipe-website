@@ -1,0 +1,24 @@
+'use client'
+import { useState } from 'react'
+import { Trash2, Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+
+export function NewsletterActions({ id }: { id: string }) {
+    const [loading, setLoading] = useState(false)
+    const router = useRouter()
+
+    async function handleDelete() {
+        if (!confirm('Remove this subscriber?')) return
+        setLoading(true)
+        await fetch(`/api/newsletter?id=${id}`, { method: 'DELETE' })
+        router.refresh()
+        setLoading(false)
+    }
+
+    return (
+        <button onClick={handleDelete} disabled={loading}
+            className="p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors disabled:opacity-50">
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+        </button>
+    )
+}
