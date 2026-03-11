@@ -58,7 +58,7 @@ export default function Navbar() {
                         </div>
                         <div className="flex flex-col">
                             <span className={`font-black tracking-tight transition-all duration-300 ${isScrolled ? 'text-2xl md:text-3xl' : 'text-3xl md:text-4xl'}`} style={{ color: '#2a1400' }}>
-                                THE FOOD CABIN
+                                PLAT FORM
                             </span>
                             <span className="text-sm md:text-base italic text-[#b55c5c] font-semibold -mt-1 tracking-wide" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                                 RECIPES
