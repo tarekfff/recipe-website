@@ -28,22 +28,8 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 /* ─── Categories data ──────────────────────────────────────── */
-const cats = [
-    { name: 'Dinner Recipes', slug: 'dinner-recipes', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=400&fit=crop' },
-    { name: 'Comfort Food', slug: 'comfort-food', img: 'https://images.unsplash.com/photo-1534939561126-855b8675edd7?w=400&h=400&fit=crop' },
-    { name: 'Quick & Easy', slug: 'quick-easy', img: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=400&fit=crop' },
-    { name: 'Healthy', slug: 'healthy-recipes', img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=400&fit=crop' },
-    { name: 'Slow Cooker', slug: 'slow-cooker', img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=400&fit=crop' },
-    { name: 'Breakfast', slug: 'breakfast-brunch', img: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=400&h=400&fit=crop' },
-    { name: 'Appetizers', slug: 'appetizers', img: 'https://images.unsplash.com/photo-1541014741259-de529411b96a?w=400&h=400&fit=crop' },
-    { name: 'Desserts', slug: 'desserts', img: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=400&fit=crop' },
-    { name: 'Seasonal', slug: 'seasonal-recipes', img: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=400&fit=crop' },
-    { name: 'BBQ & Grill', slug: 'bbq-outdoor', img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop' },
-]
-
-/* ═══════════════════════════ PAGE ═════════════════════════════ */
 export default async function HomePage() {
-    const [latestRecipes, trendingRecipes] = await Promise.all([
+    const [latestRecipes, trendingRecipes, dbCategories] = await Promise.all([
         prisma.recipe.findMany({
             where: { status: 'PUBLISHED', deletedAt: null },
             orderBy: { publishedAt: 'desc' },
@@ -55,6 +41,11 @@ export default async function HomePage() {
             orderBy: { viewCount: 'desc' },
             take: 8,
             select: { id: true, slug: true, title: true, featuredImage: true },
+        }),
+        prisma.category.findMany({
+            orderBy: { order: 'asc' },
+            take: 10,
+            select: { slug: true, name: true, image: true }
         }),
     ])
 
@@ -78,14 +69,14 @@ export default async function HomePage() {
 
                 {/* Desktop (hidden md:flex) */}
                 <div className="hidden md:flex flex-wrap justify-center gap-8 lg:gap-10">
-                    {cats.map(c => (
+                    {dbCategories.map(c => (
                         <Link key={c.slug} href={`/categories/${c.slug}`}
                             className="group flex flex-col items-center transition-transform duration-300 hover:scale-105"
                             style={{ flexBasis: 'calc(20% - 2rem)', maxWidth: 200 }}>
                             <div className="w-44 h-44 lg:w-48 lg:h-48 rounded-full overflow-hidden mb-4 relative
                                             shadow-lg group-hover:shadow-xl transition-shadow duration-300
                                             border-[3px] border-[#F0EBE3]">
-                                <Image src={c.img} alt={c.name} fill
+                                <Image src={c.image || 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=400&fit=crop'} alt={c.name} fill
                                     className="object-cover transition-transform duration-700 group-hover:scale-110" />
                             </div>
                             <h3 className="font-semibold text-center text-sm text-[#44403C] group-hover:text-[#7B2D3B] transition-colors duration-200">
@@ -97,12 +88,12 @@ export default async function HomePage() {
 
                 {/* Mobile (md:hidden) — separate HTML */}
                 <div className="md:hidden grid grid-cols-2 gap-5 justify-items-center">
-                    {cats.map(c => (
+                    {dbCategories.map(c => (
                         <Link key={c.slug} href={`/categories/${c.slug}`}
                             className="group flex flex-col items-center transition-transform duration-300 hover:scale-105">
                             <div className="w-28 h-28 rounded-full overflow-hidden mb-3 relative shadow-md
                                             border-2 border-[#F0EBE3]">
-                                <Image src={c.img} alt={c.name} fill
+                                <Image src={c.image || 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=400&fit=crop'} alt={c.name} fill
                                     className="object-cover transition-transform duration-700 group-hover:scale-110" />
                             </div>
                             <h3 className="font-semibold text-center text-xs text-[#44403C] group-hover:text-[#7B2D3B] transition-colors">
