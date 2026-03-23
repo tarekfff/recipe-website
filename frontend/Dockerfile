@@ -1,18 +1,28 @@
-# Use Node
-FROM node:20-alpine
+# frontend/Dockerfile
+FROM node:20
 
 WORKDIR /app
 
-# Install deps
-COPY package.json package-lock.json ./
-RUN npm install
+# Install git (needed for cloning if necessary)
+RUN apt-get update && apt-get install -y git
 
-# Copy project
+# Copy project files into container
 COPY . .
 
-# Build app
-RUN npm run build
+# Install dependencies
+RUN npm install
 
-# Start
+# Generate Prisma client
+RUN npx prisma generate
+
+# Run Prisma migrations (deploy database schema)
+RUN npx prisma migrate deploy
+
+# Seed admin user automatically
+RUN node ./seed-admin.ts
+
+# Expose Next.js port
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# Start dev server
+CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0"]
