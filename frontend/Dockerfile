@@ -18,11 +18,11 @@ RUN npx prisma generate
 # Run Prisma migrations (deploy database schema)
 RUN npx prisma migrate deploy
 
-# Seed admin user automatically
-RUN node ./seed-admin.ts
+# Build the Next.js app for production
+RUN npm run build
 
 # Expose Next.js port
 EXPOSE 3000
 
-# Start dev server
-CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0"]
+# Start production server
+CMD ["npm", "start"]

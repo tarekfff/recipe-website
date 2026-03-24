@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import {
     LayoutDashboard, UtensilsCrossed, FolderOpen, Users, MessageSquare,
     Search, Mail, Settings, Key, LogOut, ChefHat, BarChart3
@@ -21,6 +21,8 @@ const navItems = [
 
 export default function AdminSidebar() {
     const pathname = usePathname()
+    const { data: session } = useSession()
+    const isSuperAdmin = (session?.user as { role?: string })?.role === 'SUPER_ADMIN'
 
     return (
         <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-100 shadow-sm flex flex-col z-40">
@@ -40,6 +42,8 @@ export default function AdminSidebar() {
             {/* Navigation */}
             <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
                 {navItems.map(({ href, label, icon: Icon }) => {
+                    if (href === '/admin/settings' && !isSuperAdmin) return null
+
                     const active = pathname === href || pathname.startsWith(href + '/')
                     return (
                         <Link

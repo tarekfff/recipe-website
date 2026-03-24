@@ -3,8 +3,11 @@ import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
 import { ApiKeyManager } from '@/components/admin/ApiKeyManager'
 import { Settings, Key, Globe, Shield } from 'lucide-react'
+import SettingsEditor from './SettingsEditor'
 
 export const metadata: Metadata = { title: 'Settings' }
+
+export const dynamic = 'force-dynamic'
 
 export default async function SettingsPage() {
     const session = await auth()
@@ -105,6 +108,11 @@ export default async function SettingsPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Dynamic Global Settings Editor (SEO, Scripts, Ads) */}
+                {isSuperAdmin && (
+                    <SettingsEditor initialData={settings} />
+                )}
             </div>
         </div>
     )

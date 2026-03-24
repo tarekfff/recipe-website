@@ -169,6 +169,7 @@ model RecipeSEO {
   schemaEnabled   Boolean @default(true)
 }
 
+
 model CategorySEO {
   id              String   @id @default(cuid())
   categoryId      String   @unique
@@ -228,5 +229,14 @@ model SiteSettings {
   maintenanceMode Boolean  @default(false)
   analyticsId     String?
   socialLinks     Json?
+  
+  // Custom SEO, Scripts, and Ads additions
+  adsTxt          String?  @db.Text
+  headerScripts   String?  @db.Text
+  footerScripts   String?  @db.Text
+  seoTitle        String?
+  seoDescription  String?  @db.Text
+  seoKeywords     String?
+
   updatedAt       DateTime @updatedAt
 }
