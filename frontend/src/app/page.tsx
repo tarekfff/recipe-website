@@ -1,19 +1,12 @@
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import Image from 'next/image'
-import type { Metadata } from 'next'
 
 import HomeHeader from '@/components/HomeHeader'
 import HeroSlider from '@/components/HeroSlider'
 import AdSlot from '@/components/AdSlot'
 import NewsletterCard from '@/components/NewsletterCard'
 import HomeFooter from '@/components/HomeFooter'
-
-export const metadata: Metadata = {
-    title: 'Noir Gourmand — Culinary Stories',
-    description: 'Discover curated recipes from passionate chefs. Every dish has a story worth savoring.',
-}
-
 /* ─── Section Heading ──────────────────────────────────────── */
 function SectionHeading({ children }: { children: React.ReactNode }) {
     return (
