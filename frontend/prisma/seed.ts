@@ -1,27 +1,7 @@
 import { prisma } from '../src/lib/db'
 import { mockChefs, mockCategories, mockTags, mockRecipes } from '../src/lib/mock-data'
-import bcrypt from 'bcryptjs'
 
 async function main() {
-  // --- Insert Admin User ---
-  const adminEmail = process.env.SEED_ADMIN_EMAIL || 'admin@recipe.com'
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD || 'Admin@123456'
-  const hashedPassword = await bcrypt.hash(adminPassword, 10)
-
-  await prisma.user.upsert({
-    where: { email: adminEmail },
-    update: {
-      password: hashedPassword,
-      role: 'SUPER_ADMIN',
-    },
-    create: {
-      email: adminEmail,
-      name: 'System Admin',
-      password: hashedPassword,
-      role: 'SUPER_ADMIN',
-    },
-  })
-  console.log(`✅ Admin user seeded: ${adminEmail}`)
   // --- Insert Chefs ---
   for (const chef of mockChefs) {
     await prisma.chef.upsert({

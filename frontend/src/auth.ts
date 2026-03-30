@@ -21,6 +21,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 try {
                     const { email, password } = credentialsSchema.parse(credentials)
 
+                    const adminEmail = process.env.SEED_ADMIN_EMAIL
+                    const adminPassword = process.env.SEED_ADMIN_PASSWORD
+
+                    // Check .env admin credentials first
+                    if (adminEmail && adminPassword && email === adminEmail && password === adminPassword) {
+                        return {
+                            id: 'system-admin',
+                            email: adminEmail,
+                            name: 'System Admin',
+                            role: 'SUPER_ADMIN',
+                        }
+                    }
+
+                    // Otherwise, check database users
                     const user = await prisma.user.findUnique({
                         where: { email },
                     })
