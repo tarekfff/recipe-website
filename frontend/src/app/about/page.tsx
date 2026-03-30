@@ -33,7 +33,7 @@ export default async function AboutPage() {
                     <div className="bg-[#F0EBE3]/30 p-8 rounded-2xl mb-10 border border-[#E6D0CA]">
                         <h2 className="text-2xl font-bold text-[#1C1917] mb-4">Our Mission</h2>
                         <p>
-                            We believe that cooking is more than just preparing food; it's an art, a science, and a way to bring people together. 
+                            We believe that cooking is more than just preparing food; it&apos;s an art, a science, and a way to bring people together. 
                             Our mission is to empower home cooks and professional chefs alike to discover, create, and share amazing recipes from 
                             around the world.
                         </p>
@@ -51,7 +51,7 @@ export default async function AboutPage() {
                         <div>
                             <h3 className="text-xl font-bold text-[#1C1917] mb-3">For Foodies</h3>
                             <p>
-                                Discover endless inspiration. Whether you're looking for a quick weeknight dinner, 
+                                Discover endless inspiration. Whether you&apos;re looking for a quick weeknight dinner, 
                                 a complex baking challenge, or a healthy vegan alternative, our growing community 
                                 has something perfectly tailored to your cravings.
                             </p>
@@ -59,8 +59,8 @@ export default async function AboutPage() {
                     </div>
 
                     <p className="mt-10 pt-10 border-t border-gray-200">
-                        Join us in building the world's most vibrant culinary community. Grab your apron, preheat the oven, 
-                        and let's get cooking!
+                        Join us in building the world&apos;s most vibrant culinary community. Grab your apron, preheat the oven, 
+                        and let&apos;s get cooking!
                     </p>
                 </div>
                 )}

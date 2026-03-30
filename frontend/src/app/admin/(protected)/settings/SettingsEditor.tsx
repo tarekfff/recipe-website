@@ -223,7 +223,7 @@ export default function SettingsEditor({ initialData }: { initialData: any }) {
                 {activeTab === 'scripts' && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
-                            <strong>Warning:</strong> Code entered here is injected directly into your website's source code. Ensure you fully trust any scripts (such as Google Analytics or Meta Pixel) before saving.
+                            <strong>Warning:</strong> Code entered here is injected directly into your website&apos;s source code. Ensure you fully trust any scripts (such as Google Analytics or Meta Pixel) before saving.
                         </div>
 
                         <div>
