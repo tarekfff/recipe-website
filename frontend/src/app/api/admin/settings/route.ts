@@ -5,12 +5,18 @@ import { z } from 'zod'
 
 // Validation schema for the site settings API payload
 const settingsSchema = z.object({
+    siteName: z.string().nullable().optional(),
+    logo: z.string().nullable().optional(),
     seoTitle: z.string().nullable().optional(),
     seoDescription: z.string().nullable().optional(),
     seoKeywords: z.string().nullable().optional(),
     headerScripts: z.string().nullable().optional(),
     footerScripts: z.string().nullable().optional(),
     adsTxt: z.string().nullable().optional(),
+    aboutText: z.string().nullable().optional(),
+    privacyText: z.string().nullable().optional(),
+    termsText: z.string().nullable().optional(),
+    contactText: z.string().nullable().optional(),
 })
 
 export async function GET(req: Request) {
@@ -34,6 +40,10 @@ export async function GET(req: Request) {
                 headerScripts: '',
                 footerScripts: '',
                 adsTxt: '',
+                aboutText: '',
+                privacyText: '',
+                termsText: '',
+                contactText: '',
             }
         })
     } catch (error: any) {
@@ -64,15 +74,20 @@ export async function POST(req: Request) {
 
         const data = parsed.data
 
+        // Remove null/undefined values for create (some fields like siteName have defaults and aren't nullable)
+        const cleanData = Object.fromEntries(
+            Object.entries(data).filter(([, v]) => v !== null && v !== undefined)
+        )
+
         // Upsert the singleton pattern (always id="singleton")
         const updatedSettings = await prisma.siteSettings.upsert({
             where: { id: 'singleton' },
             create: {
                 id: 'singleton',
-                ...data,
+                ...cleanData,
             },
             update: {
-                ...data,
+                ...cleanData,
             }
         })
 
@@ -85,3 +100,4 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 })
     }
 }
+

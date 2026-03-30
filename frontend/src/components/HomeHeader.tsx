@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X, Search } from 'lucide-react'
+import { useBranding } from '@/components/BrandingProvider'
 
 const mainLinks = [
     { label: 'Recipes', href: '/recipes', dropdown: true },
@@ -24,6 +25,8 @@ const mobileLinks = [
 export default function HomeHeader() {
     const [open, setOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
+    const { siteName, logo } = useBranding()
+    const logoSrc = logo || '/logo.png'
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 20)
@@ -90,8 +93,8 @@ export default function HomeHeader() {
                             <div className={`relative transition-all duration-300 group-hover:scale-105 ${scrolled ? 'w-12 h-12 md:w-14 md:h-14' : 'w-16 h-16 md:w-20 md:h-20'
                                 }`}>
                                 <Image
-                                    src="/logo.png"
-                                    alt="Recipe Platform Logo"
+                                    src={logoSrc}
+                                    alt={`${siteName} Logo`}
                                     fill
                                     className="object-cover rounded-2xl drop-shadow-md"
                                 />
@@ -102,13 +105,13 @@ export default function HomeHeader() {
                                         }`}
                                     style={{ color: 'var(--burgundy)' }}
                                 >
-                                    PLATFORM
+                                    {siteName.split(' ')[0]?.toUpperCase() || 'PLATFORM'}
                                 </span>
                                 <span
                                     className="text-xs md:text-sm font-bold tracking-[0.2em] mt-1 uppercase"
                                     style={{ color: 'var(--rose)' }}
                                 >
-                                    RECIPES
+                                    {siteName.split(' ').slice(1).join(' ')?.toUpperCase() || 'RECIPES'}
                                 </span>
                             </div>
                         </Link>

@@ -238,5 +238,11 @@ model SiteSettings {
   seoDescription  String?  @db.Text
   seoKeywords     String?
 
+  // Dynamic Content Pages
+  aboutText       String?  @db.Text
+  privacyText     String?  @db.Text
+  termsText       String?  @db.Text
+  contactText     String?  @db.Text
+
   updatedAt       DateTime @updatedAt
 }

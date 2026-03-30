@@ -2,46 +2,55 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Save, Loader2, Search, Code, FileText } from 'lucide-react'
+import { Save, Loader2, Search, Code, FileText, Palette, Upload } from 'lucide-react'
+import { updateSiteSettings } from './actions'
 
 // Tab definitions
-type TabType = 'seo' | 'scripts' | 'ads'
+type TabType = 'branding' | 'seo' | 'scripts' | 'ads' | 'pages'
 
 interface SiteSettingsFormData {
+    siteName: string
+    logo: string
     seoTitle: string
     seoDescription: string
     seoKeywords: string
     headerScripts: string
     footerScripts: string
     adsTxt: string
+    aboutText: string
+    privacyText: string
+    termsText: string
+    contactText: string
 }
 
 export default function SettingsEditor({ initialData }: { initialData: any }) {
-    const [activeTab, setActiveTab] = useState<TabType>('seo')
+    const [activeTab, setActiveTab] = useState<TabType>('branding')
     const [isLoading, setIsLoading] = useState(false)
+    const [isUploadingLogo, setIsUploadingLogo] = useState(false)
 
     // Form states
     const [formData, setFormData] = useState<SiteSettingsFormData>({
+        siteName: initialData?.siteName || '',
+        logo: initialData?.logo || '',
         seoTitle: initialData?.seoTitle || '',
         seoDescription: initialData?.seoDescription || '',
         seoKeywords: initialData?.seoKeywords || '',
         headerScripts: initialData?.headerScripts || '',
         footerScripts: initialData?.footerScripts || '',
         adsTxt: initialData?.adsTxt || '',
+        aboutText: initialData?.aboutText || '',
+        privacyText: initialData?.privacyText || '',
+        termsText: initialData?.termsText || '',
+        contactText: initialData?.contactText || '',
     })
 
     const handleSave = async () => {
         setIsLoading(true)
         try {
-            const res = await fetch('/api/admin/settings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            })
+            const result = await updateSiteSettings(formData)
 
-            if (!res.ok) {
-                const errorData = await res.json()
-                throw new Error(errorData.error || 'Failed to update settings')
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to update settings')
             }
 
             toast.success('Site settings globally updated.')
@@ -55,10 +64,16 @@ export default function SettingsEditor({ initialData }: { initialData: any }) {
     return (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm mt-8 relative">
             {/* Header / Tabs */}
-            <div className="border-b border-gray-100 px-6 py-4 flex gap-6">
+            <div className="border-b border-gray-100 px-6 py-4 flex gap-6 overflow-x-auto">
+                <button
+                    onClick={() => setActiveTab('branding')}
+                    className={`flex items-center gap-2 pb-4 -mb-[17px] border-b-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'branding' ? 'border-[#7B2D3B] text-[#7B2D3B]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+                >
+                    <Palette className="w-4 h-4" /> Branding
+                </button>
                 <button
                     onClick={() => setActiveTab('seo')}
-                    className={`flex items-center gap-2 pb-4 -mb-[17px] border-b-2 font-medium transition-colors ${activeTab === 'seo' ? 'border-[#7B2D3B] text-[#7B2D3B]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+                    className={`flex items-center gap-2 pb-4 -mb-[17px] border-b-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'seo' ? 'border-[#7B2D3B] text-[#7B2D3B]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
                 >
                     <Search className="w-4 h-4" /> SEO Metadata
                 </button>
@@ -74,9 +89,99 @@ export default function SettingsEditor({ initialData }: { initialData: any }) {
                 >
                     <FileText className="w-4 h-4" /> Ads.txt
                 </button>
+                <button
+                    onClick={() => setActiveTab('pages')}
+                    className={`flex items-center gap-2 pb-4 -mb-[17px] border-b-2 font-medium transition-colors ${activeTab === 'pages' ? 'border-[#7B2D3B] text-[#7B2D3B]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+                >
+                    <FileText className="w-4 h-4" /> Marketing Pages
+                </button>
             </div>
 
             <div className="p-6 pb-20">
+                {/* Branding Tab */}
+                {activeTab === 'branding' && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+                            <strong>Site Identity:</strong> Changes here update your site name and logo across the entire website — Navbar, Footer, and all pages.
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Site Name</label>
+                            <input
+                                type="text"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-[#7B2D3B]/20 focus:border-[#7B2D3B]"
+                                placeholder="Noir Gourmand"
+                                value={formData.siteName}
+                                onChange={(e) => setFormData({ ...formData, siteName: e.target.value })}
+                            />
+                            <p className="text-xs text-gray-400 mt-1.5">Displayed in the Navbar, Footer, and browser tab. Leave empty to use the default.</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Logo URL</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-[#7B2D3B]/20 focus:border-[#7B2D3B] flex-1"
+                                    placeholder="/logo.png or https://example.com/logo.png"
+                                    value={formData.logo}
+                                    onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+                                />
+                                <label className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors cursor-pointer whitespace-nowrap">
+                                    {isUploadingLogo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                    {isUploadingLogo ? 'Uploading...' : 'Upload Image'}
+                                    <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
+                                        const file = e.target.files?.[0]
+                                        if (!file) return
+                                        setIsUploadingLogo(true)
+                                        try {
+                                            const fd = new FormData()
+                                            fd.append('file', file)
+                                            const res = await fetch('/api/upload', {
+                                                method: 'POST',
+                                                body: fd
+                                            })
+                                            if (res.ok) {
+                                                const data = await res.json()
+                                                setFormData(prev => ({ ...prev, logo: data.url }))
+                                                toast.success('Logo uploaded automatically!')
+                                            } else {
+                                                toast.error('Failed to upload image')
+                                            }
+                                        } catch (err) {
+                                            console.error(err)
+                                            toast.error('Network error during upload')
+                                        } finally {
+                                            setIsUploadingLogo(false)
+                                        }
+                                    }} disabled={isUploadingLogo} />
+                                </label>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1.5">URL to your site logo. Can be a relative path (e.g. /logo.png) or full URL. You can also upload a file directly.</p>
+                        </div>
+
+                        {/* Live preview */}
+                        {(formData.siteName || formData.logo) && (
+                            <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
+                                <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-3">Preview</p>
+                                <div className="flex items-center gap-3">
+                                    {formData.logo && (
+                                        <img
+                                            src={formData.logo}
+                                            alt="Logo preview"
+                                            className="w-12 h-12 rounded-xl object-cover border border-gray-200"
+                                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                                        />
+                                    )}
+                                    <span className="text-xl font-bold text-gray-900">
+                                        {formData.siteName || 'Recipe Platform'}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {/* SEO Tab */}
                 {activeTab === 'seo' && (
                     <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -160,6 +265,59 @@ export default function SettingsEditor({ initialData }: { initialData: any }) {
                                 onChange={(e) => setFormData({ ...formData, adsTxt: e.target.value })}
                             />
                             <p className="text-xs text-gray-400 mt-1.5">The content here is dynamically served when visiting `&lt;your-domain&gt;/ads.txt`.</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Pages Tab */}
+                {activeTab === 'pages' && (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                            <strong>Tip:</strong> These text areas support raw HTML formatting. You can place exact Tailwind layouts and markup safely here, bypassing Next.js pre-rendering.
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">About Us — Page Content</label>
+                            <textarea
+                                rows={12}
+                                className="w-full font-mono text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#7B2D3B]/20 focus:border-[#7B2D3B]"
+                                placeholder="<h1>About Our Platform</h1>..."
+                                value={formData.aboutText}
+                                onChange={(e) => setFormData({ ...formData, aboutText: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Privacy Policy — Page Content</label>
+                            <textarea
+                                rows={12}
+                                className="w-full font-mono text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#7B2D3B]/20 focus:border-[#7B2D3B]"
+                                placeholder="<h2>1. Data Collection</h2>..."
+                                value={formData.privacyText}
+                                onChange={(e) => setFormData({ ...formData, privacyText: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Terms of Use — Page Content</label>
+                            <textarea
+                                rows={12}
+                                className="w-full font-mono text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#7B2D3B]/20 focus:border-[#7B2D3B]"
+                                placeholder="<h2>1. Usage Restrictions</h2>..."
+                                value={formData.termsText}
+                                onChange={(e) => setFormData({ ...formData, termsText: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Contact Us — Page Content</label>
+                            <textarea
+                                rows={12}
+                                className="w-full font-mono text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#7B2D3B]/20 focus:border-[#7B2D3B]"
+                                placeholder="<h2>Get In Touch</h2>..."
+                                value={formData.contactText}
+                                onChange={(e) => setFormData({ ...formData, contactText: e.target.value })}
+                            />
                         </div>
                     </div>
                 )}

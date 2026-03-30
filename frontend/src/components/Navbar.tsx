@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Search, MapPin } from 'lucide-react'
+import { useBranding } from '@/components/BrandingProvider'
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false)
+    const { siteName, logo } = useBranding()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -15,6 +17,8 @@ export default function Navbar() {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
+    const logoSrc = logo || '/logo.png'
 
     return (
         <>
@@ -50,18 +54,18 @@ export default function Navbar() {
                     <Link href="/" className="flex items-center gap-4 group">
                         <div className={`relative transition-all duration-300 group-hover:scale-105 ${isScrolled ? 'w-12 h-12 md:w-14 md:h-14' : 'w-16 h-16 md:w-20 md:h-20'}`}>
                             <Image
-                                src="/logo.png"
-                                alt="Recipe Platform Logo"
+                                src={logoSrc}
+                                alt={`${siteName} Logo`}
                                 fill
                                 className="object-cover rounded-2xl drop-shadow-md"
                             />
                         </div>
                         <div className="flex flex-col justify-center mt-1">
                             <span className={`font-black tracking-tight leading-none transition-all duration-300 ${isScrolled ? 'text-2xl md:text-3xl' : 'text-3xl md:text-4xl'}`} style={{ color: '#2a1400' }}>
-                                PLATFORM
+                                {siteName.split(' ')[0]?.toUpperCase() || 'PLATFORM'}
                             </span>
                             <span className="text-xs md:text-sm text-[#b55c5c] font-bold tracking-[0.2em] mt-1 uppercase" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                                RECIPES
+                                {siteName.split(' ').slice(1).join(' ')?.toUpperCase() || 'RECIPES'}
                             </span>
                         </div>
                     </Link>

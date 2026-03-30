@@ -84,10 +84,10 @@ export default async function RecipePage({ params }: Props) {
   prisma.recipe.update({
     where: { id: recipe.id },
     data: { viewCount: { increment: 1 } },
-  }).catch(() => {})
+  }).catch(() => { })
 
   // Related recipes (same category, excluding current)
-  const [related, sidebarFavs] = await Promise.all([
+  const [related, sidebarFavs, siteSettings] = await Promise.all([
     prisma.recipe.findMany({
       where: { status: 'PUBLISHED', deletedAt: null, categoryId: recipe.categoryId, id: { not: recipe.id } },
       orderBy: { viewCount: 'desc' },
@@ -103,7 +103,14 @@ export default async function RecipePage({ params }: Props) {
       take: 4,
       select: { id: true, slug: true, title: true, featuredImage: true },
     }),
+    prisma.siteSettings.findUnique({
+      where: { id: 'singleton' },
+      select: { siteName: true, logo: true },
+    }),
   ])
+
+  const brandName = siteSettings?.siteName || 'Recipe Platform'
+  const brandLogo = siteSettings?.logo || '/logo.png'
 
   // Derived values
   const avgRating = recipe.feedback.length > 0
@@ -209,7 +216,7 @@ export default async function RecipePage({ params }: Props) {
             {/* Breadcrumb nav */}
             <nav aria-label="Breadcrumb" className="rp-breadcrumb">
               <Link href="/" aria-label="Home">
-                <Image src="/logo.png" alt="Logo" width={36} height={36} className="rp-logo" />
+                <Image src={brandLogo} alt={brandName} width={36} height={36} className="rp-logo" />
               </Link>
               <ChevronRight className="rp-crumb-sep" aria-hidden="true" />
               <Link href="/recipes" className="rp-crumb-link">Recipes</Link>
@@ -656,10 +663,10 @@ export default async function RecipePage({ params }: Props) {
         <footer className="rp-footer" role="contentinfo">
           <div className="rp-footer-inner">
             <div className="rp-footer-brand">
-              <Image src="/logo.png" alt="Recipe Platform" width={34} height={34} className="rp-footer-logo" />
-              <span>Recipe Platform</span>
+              <Image src={brandLogo} alt={brandName} width={34} height={34} className="rp-footer-logo" />
+              <span>{brandName}</span>
             </div>
-            <p className="rp-footer-copy">© {new Date().getFullYear()} Recipe Platform. All rights reserved.</p>
+            <p className="rp-footer-copy">© {new Date().getFullYear()} {brandName}. All rights reserved.</p>
             <nav aria-label="Footer navigation">
               <ul className="rp-footer-links">
                 {[

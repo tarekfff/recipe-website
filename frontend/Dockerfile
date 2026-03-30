@@ -1,28 +1,27 @@
 # frontend/Dockerfile
-FROM node:20
+FROM node:20-slim
 
 WORKDIR /app
 
-# Install git (needed for cloning if necessary)
-RUN apt-get update && apt-get install -y git
+# Install OpenSSL (required by Prisma)
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
-# Copy project files into container
-COPY . .
+# Copy dependency files first for caching
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Install dependencies
-RUN npm install
-
-# Generate Prisma client
+# Copy prisma schema and generate client
+COPY prisma ./prisma/
 RUN npx prisma generate
 
-# Run Prisma migrations (deploy database schema)
-RUN npx prisma migrate deploy
+# Copy the rest of the project
+COPY . .
 
-# Build the Next.js app for production
+# Build the Next.js app
 RUN npm run build
 
 # Expose Next.js port
 EXPOSE 3000
 
-# Start production server
-CMD ["npm", "start"]
+# At runtime: push schema + start server
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss && npm start"]

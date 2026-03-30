@@ -1,4 +1,4 @@
-version: '3.9'
+# Docker Compose for Recipe Platform
 
 services:
   postgres:
@@ -13,6 +13,11 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   nextjs-dev:
     image: node:20
@@ -23,11 +28,22 @@ services:
       - /app/node_modules
     ports:
       - "3000:3000"
-    command: sh -c "npm install && npm run dev -- -H 0.0.0.0"
+    command: >
+      sh -c "
+        npm install &&
+        npx prisma generate &&
+        npx prisma db push --accept-data-loss &&
+        npm run dev -- -H 0.0.0.0
+      "
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password123}@postgres:5432/${POSTGRES_DB:-recipe_platform}"
+      AUTH_SECRET: "${AUTH_SECRET:-8GZtvJw1fGZT+t3+xCzOeDQhkmf8I9s06To3iaCeT60=}"
+      AUTH_TRUST_HOST: "true"
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3000"
 
   nextjs-prod:
     image: node:20
@@ -37,13 +53,24 @@ services:
       - ./:/app
       - /app/node_modules
     ports:
-      - "3001:3000"  # production can use a different host port
-    command: sh -c "npm install && npm run build && npm start"
+      - "3001:3000"
+    command: >
+      sh -c "
+        npm install &&
+        npx prisma generate &&
+        npx prisma db push --accept-data-loss &&
+        npm run build &&
+        npm start
+      "
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password123}@postgres:5432/${POSTGRES_DB:-recipe_platform}"
+      AUTH_SECRET: "${AUTH_SECRET:-8GZtvJw1fGZT+t3+xCzOeDQhkmf8I9s06To3iaCeT60=}"
       AUTH_TRUST_HOST: "true"
+      NEXTAUTH_URL: "http://localhost:3001"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3001"
 
 volumes:
   pgdata:

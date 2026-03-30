@@ -7,6 +7,7 @@ import {
     Info, Mail, HelpCircle, Search, Shield, FileCheck,
     Cookie, AlertTriangle, Map, Rss, ArrowUp
 } from 'lucide-react'
+import { useBranding } from '@/components/BrandingProvider'
 
 const links = [
     { label: 'Home', href: '/', icon: Home },
@@ -30,6 +31,7 @@ const links = [
 
 export default function HomeFooter() {
     const [showTop, setShowTop] = useState(false)
+    const { siteName } = useBranding()
 
     useEffect(() => {
         const onScroll = () => setShowTop(window.scrollY > 5000)
@@ -45,7 +47,7 @@ export default function HomeFooter() {
                 {/* Logo */}
                 <span className="font-display text-3xl font-bold tracking-tight mb-2"
                     style={{ color: 'var(--gold)' }}>
-                    Noir Gourmand
+                    {siteName}
                 </span>
                 <span className="text-[10px] font-medium uppercase tracking-[0.3em] mb-10"
                     style={{ color: 'rgba(200,149,108,0.5)' }}>
@@ -82,7 +84,7 @@ export default function HomeFooter() {
 
                 <div className="w-20 h-px mb-6" style={{ background: 'rgba(255,255,255,0.08)' }} />
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                    © {new Date().getFullYear()} Noir Gourmand. All rights reserved.
+                    © {new Date().getFullYear()} {siteName}. All rights reserved.
                 </p>
             </div>
 
