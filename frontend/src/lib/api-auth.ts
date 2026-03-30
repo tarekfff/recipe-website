@@ -27,6 +27,11 @@ export async function verifyAuth(request: Request): Promise<AuthUser | null> {
     const session = await auth()
     if (!session?.user?.id) return null
 
+    // Pass-through for hardcoded .env admin
+    if (session.user.id === 'system-admin') {
+        return session.user as AuthUser
+    }
+
     const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { id: true, email: true, name: true, role: true },

@@ -25,14 +25,16 @@ export async function updateSiteSettings(formData: {
         return { success: false, error: 'Unauthorized' }
     }
 
-    // Verify role
-    console.log('[Settings Save] session user id:', session.user.id);
-    const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { id: true, role: true },
-    })
+    let user: { id: string, role: string } | null = null
 
-    console.log('[Settings Save] found user:', user);
+    if (session.user.id === 'system-admin') {
+        user = { id: 'system-admin', role: 'SUPER_ADMIN' }
+    } else {
+        user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { id: true, role: true },
+        })
+    }
 
     if (!user || user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Forbidden' }
