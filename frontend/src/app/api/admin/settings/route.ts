@@ -17,6 +17,7 @@ const settingsSchema = z.object({
     privacyText: z.string().nullable().optional(),
     termsText: z.string().nullable().optional(),
     contactText: z.string().nullable().optional(),
+    socialLinks: z.any().nullable().optional(),
 })
 
 export async function GET(req: Request) {
@@ -44,6 +45,7 @@ export async function GET(req: Request) {
                 privacyText: '',
                 termsText: '',
                 contactText: '',
+                socialLinks: null,
             }
         })
     } catch (error: any) {

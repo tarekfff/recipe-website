@@ -17,7 +17,6 @@ const mobileLinks = [
     { label: 'Recipes', href: '/recipes' },
     { label: 'Categories', href: '/categories' },
     { label: 'Chefs', href: '/chefs' },
-    { label: 'Articles', href: '#' },
     { label: 'About', href: '/about' },
     { label: 'Contact', href: '/contact' },
 ]
@@ -25,7 +24,7 @@ const mobileLinks = [
 export default function HomeHeader() {
     const [open, setOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
-    const { siteName, logo } = useBranding()
+    const { siteName, logo, socialLinks } = useBranding()
     const logoSrc = logo || '/logo.png'
 
     useEffect(() => {
@@ -64,7 +63,7 @@ export default function HomeHeader() {
                         <Link href="/privacy" className="hover:text-[#7B2D3B] transition-colors">Privacy Policy</Link>
                         <Link href="/contact" className="hover:text-[#7B2D3B] transition-colors">Contact</Link>
                         <Link href="/terms" className="hover:text-[#7B2D3B] transition-colors">Terms of Use</Link>
-                        <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer"
+                        <a href={socialLinks?.pinterest || "https://pinterest.com"} target="_blank" rel="noopener noreferrer"
                             className="hover:text-[#bd081c] transition-colors ml-2" aria-label="Pinterest">
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.951-7.252 4.182 0 7.429 2.977 7.429 6.945 0 4.155-2.617 7.509-6.253 7.509-1.221 0-2.368-.636-2.761-1.385l-.752 2.868c-.272 1.037-1.009 2.338-1.503 3.125 1.258.384 2.598.592 3.987.592 6.621 0 11.988-5.367 11.988-11.987C24 5.367 18.638 0 12.017 0z" />

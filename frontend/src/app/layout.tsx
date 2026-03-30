@@ -16,7 +16,8 @@ const getSiteSettings = cache(async () => {
                 seoDescription: true,
                 seoKeywords: true,
                 headerScripts: true,
-                footerScripts: true
+                footerScripts: true,
+                socialLinks: true
             }
         })
     } catch (e) {
@@ -35,6 +36,14 @@ export async function generateMetadata(): Promise<Metadata> {
         },
         description: settings?.seoDescription || 'Discover and share amazing recipes from around the world.',
         keywords: settings?.seoKeywords || undefined,
+        openGraph: {
+            images: settings?.logo ? [settings.logo] : undefined,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            images: settings?.logo ? [settings.logo] : undefined,
+        },
+        icons: settings?.logo ? { icon: settings.logo } : undefined,
     }
 }
 
@@ -48,6 +57,7 @@ export default async function RootLayout({
     const branding = {
         siteName: settings?.siteName || 'Recipe Platform',
         logo: settings?.logo || null,
+        socialLinks: (settings?.socialLinks as any) || null,
     }
 
     return (

@@ -5,11 +5,13 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 interface BrandingData {
     siteName: string
     logo: string | null
+    socialLinks?: any
 }
 
 const BrandingContext = createContext<BrandingData>({
     siteName: 'Recipe Platform',
     logo: null,
+    socialLinks: null,
 })
 
 export function useBranding() {
@@ -24,7 +26,7 @@ export function BrandingProvider({
     initial?: BrandingData
 }) {
     const [branding, setBranding] = useState<BrandingData>(
-        initial || { siteName: 'Recipe Platform', logo: null }
+        initial || { siteName: 'Recipe Platform', logo: null, socialLinks: null }
     )
 
     useEffect(() => {
@@ -37,6 +39,7 @@ export function BrandingProvider({
                 setBranding({
                     siteName: data.siteName || 'Recipe Platform',
                     logo: data.logo || null,
+                    socialLinks: data.socialLinks || null,
                 })
             })
             .catch(() => {

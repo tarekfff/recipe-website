@@ -17,6 +17,7 @@ export async function updateSiteSettings(formData: {
     privacyText?: string
     termsText?: string
     contactText?: string
+    socialLinks?: any
 }) {
     // Verify auth via session (works reliably in Server Actions)
     const session = await auth()

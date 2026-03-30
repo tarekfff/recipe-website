@@ -10,12 +10,14 @@ export async function GET() {
             select: {
                 siteName: true,
                 logo: true,
+                socialLinks: true,
             }
         })
 
         return NextResponse.json({
             siteName: settings?.siteName || 'Recipe Platform',
             logo: settings?.logo || null,
+            socialLinks: settings?.socialLinks || null,
         }, {
             headers: {
                 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
@@ -25,6 +27,7 @@ export async function GET() {
         return NextResponse.json({
             siteName: 'Recipe Platform',
             logo: null,
+            socialLinks: null,
         })
     }
 }

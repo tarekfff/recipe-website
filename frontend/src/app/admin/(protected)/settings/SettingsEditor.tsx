@@ -21,6 +21,7 @@ interface SiteSettingsFormData {
     privacyText: string
     termsText: string
     contactText: string
+    socialLinks: any
 }
 
 export default function SettingsEditor({ initialData }: { initialData: any }) {
@@ -42,6 +43,7 @@ export default function SettingsEditor({ initialData }: { initialData: any }) {
         privacyText: initialData?.privacyText || '',
         termsText: initialData?.termsText || '',
         contactText: initialData?.contactText || '',
+        socialLinks: initialData?.socialLinks || { pinterest: '' },
     })
 
     const handleSave = async () => {
@@ -179,6 +181,18 @@ export default function SettingsEditor({ initialData }: { initialData: any }) {
                                 </div>
                             </div>
                         )}
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Pinterest URL</label>
+                            <input
+                                type="url"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-[#7B2D3B]/20 focus:border-[#7B2D3B]"
+                                placeholder="https://pinterest.com/YourUsername/"
+                                value={formData.socialLinks?.pinterest || ''}
+                                onChange={(e) => setFormData({ ...formData, socialLinks: { ...formData.socialLinks, pinterest: e.target.value } })}
+                            />
+                            <p className="text-xs text-gray-400 mt-1.5">Displayed as the Pinterest icon in the global footer.</p>
+                        </div>
                     </div>
                 )}
 

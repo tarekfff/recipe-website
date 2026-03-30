@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
-    Home, Utensils, Grid, FileText, Compass, Users,
-    Info, Mail, HelpCircle, Search, Shield, FileCheck,
-    Cookie, AlertTriangle, Map, Rss, ArrowUp
+    Home, Utensils, Grid, Users, Info, Mail, Search, Shield, FileCheck, ArrowUp
 } from 'lucide-react'
 import { useBranding } from '@/components/BrandingProvider'
 
@@ -13,25 +11,17 @@ const links = [
     { label: 'Home', href: '/', icon: Home },
     { label: 'Recipes', href: '/recipes', icon: Utensils },
     { label: 'Categories', href: '/categories', icon: Grid },
-    { label: 'Articles', href: '#', icon: FileText },
-    { label: 'Explore', href: '#', icon: Compass },
     { label: 'Authors', href: '/chefs', icon: Users },
     { label: 'About', href: '/about', icon: Info },
     { label: 'Contact', href: '/contact', icon: Mail },
-    { label: 'FAQ', href: '/faq', icon: HelpCircle },
     { label: 'Search', href: '/search', icon: Search },
     { label: 'Privacy', href: '/privacy', icon: Shield },
     { label: 'Terms', href: '/terms', icon: FileCheck },
-    { label: 'Cookies', href: '/cookies', icon: Cookie },
-    { label: 'Disclaimer', href: '/disclaimer', icon: AlertTriangle },
-    { label: 'Sitemap', href: '/sitemap.xml', icon: Map },
-    { label: 'Articles Feed', href: '/feed.xml', icon: Rss },
-    { label: 'Recipes Feed', href: '/recipes.xml', icon: Rss },
 ]
 
 export default function HomeFooter() {
     const [showTop, setShowTop] = useState(false)
-    const { siteName } = useBranding()
+    const { siteName, socialLinks } = useBranding()
 
     useEffect(() => {
         const onScroll = () => setShowTop(window.scrollY > 5000)
@@ -56,7 +46,7 @@ export default function HomeFooter() {
 
                 {/* Social */}
                 <div className="flex justify-center space-x-5 mb-10">
-                    <a href="https://pinterest.com/TheFoodCabin/" target="_blank" rel="noopener noreferrer"
+                    <a href={socialLinks?.pinterest || "https://pinterest.com/"} target="_blank" rel="noopener noreferrer"
                         className="w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300"
                         style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' }}
                         onMouseOver={e => { e.currentTarget.style.background = '#bd081c'; e.currentTarget.style.color = 'white' }}
