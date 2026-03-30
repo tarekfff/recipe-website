@@ -4,6 +4,8 @@ import AdminSidebar from '@/components/admin/AdminSidebar'
 import { SessionProvider } from 'next-auth/react'
 import { Toaster } from 'sonner'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ProtectedAdminLayout({
     children,
 }: {
