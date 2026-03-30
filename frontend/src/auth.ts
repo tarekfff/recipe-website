@@ -26,6 +26,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                     // Check .env admin credentials first
                     if (adminEmail && adminPassword && email === adminEmail && password === adminPassword) {
+                        
+                        // Transparently generate the DB record so Foreign Keys (like AuditLog) work flawlessly
+                        await prisma.user.upsert({
+                            where: { id: 'system-admin' },
+                            create: { id: 'system-admin', email: adminEmail, name: 'System Admin', role: 'SUPER_ADMIN', password: '' },
+                            update: { email: adminEmail }
+                        }).catch(() => {
+                            // Ignore rare race-conditions, record will exist
+                        })
+
                         return {
                             id: 'system-admin',
                             email: adminEmail,
