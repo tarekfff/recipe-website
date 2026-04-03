@@ -81,8 +81,8 @@ export default function PinterestHoverOverlay() {
         <div id="pinterest-overlay-btn"
            className="fixed z-[9999] p-3" // invisible padding area makes it easier to keep hovered
            style={{
-               top: Math.max(0, rect.top) + 8,
-               left: rect.left + rect.width - 60, // approximate top right corner
+               top: Math.max(0, rect.top) + (rect.height / 2) - 32, // Perfect vertical center (32 is half of the 64px wrapper)
+               left: rect.left + (rect.width / 2) - 32, // Perfect horizontal center
            }}
            onMouseLeave={() => setHoveredImg(null)}
         >
