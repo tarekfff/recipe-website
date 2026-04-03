@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { cache } from 'react'
 import { prisma } from '@/lib/db'
 import { BrandingProvider } from '@/components/BrandingProvider'
+import { default as PinterestHoverOverlay } from '@/components/PinterestHoverOverlay'
 import './globals.css'
 
 // Cache the DB fetch so it's only executed once per request
@@ -66,6 +67,7 @@ export default async function RootLayout({
             <body className="antialiased">
                 <BrandingProvider initial={branding}>
                     {children}
+                    <PinterestHoverOverlay />
                 </BrandingProvider>
 
                 {settings?.footerScripts ? <div dangerouslySetInnerHTML={{ __html: settings.footerScripts }} /> : null}
