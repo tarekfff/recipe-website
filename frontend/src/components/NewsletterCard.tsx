@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Mail, CheckCircle2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function NewsletterCard() {
     const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
@@ -9,8 +10,29 @@ export default function NewsletterCard() {
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setStatus('loading')
-        await new Promise(r => setTimeout(r, 700))
-        setStatus('success')
+
+        const formData = new FormData(e.currentTarget)
+        const name = formData.get('name') as string
+        const email = formData.get('email') as string
+
+        try {
+            const res = await fetch('/api/newsletter', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email }),
+            })
+            
+            if (!res.ok) {
+                const data = await res.json()
+                throw new Error(data.error || 'Failed to subscribe')
+            }
+            
+            setStatus('success')
+        } catch (error: any) {
+            console.error('Subscription error:', error)
+            toast.error(error.message || 'Failed to subscribe')
+            setStatus('idle')
+        }
     }
 
     return (

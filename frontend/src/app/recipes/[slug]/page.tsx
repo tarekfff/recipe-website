@@ -9,6 +9,7 @@ import {
   ChevronRight, CheckCircle2, ArrowLeft, Printer,
   BookmarkPlus, Share2, ThumbsUp
 } from 'lucide-react'
+import RecipeFeedbackForm from '@/components/recipes/RecipeFeedbackForm'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -466,13 +467,14 @@ export default async function RecipePage({ params }: Props) {
 
 
               {/* ── REVIEWS ── */}
-              {recipe.feedback.length > 0 && (
-                <section className="rp-reviews" aria-labelledby="reviews-heading">
-                  <div className="rp-reviews-header">
-                    <h2 id="reviews-heading" className="rp-section-title">
-                      Reviews
-                      <span className="rp-reviews-count">({recipe.feedback.length})</span>
-                    </h2>
+              <section className="rp-reviews" aria-labelledby="reviews-heading">
+                {recipe.feedback.length > 0 && (
+                  <>
+                    <div className="rp-reviews-header">
+                      <h2 id="reviews-heading" className="rp-section-title">
+                        Reviews
+                        <span className="rp-reviews-count">({recipe.feedback.length})</span>
+                      </h2>
                     {avgRating && (
                       <div className="rp-reviews-avg">
                         <Stars rating={avgRating} size="md" />
@@ -497,10 +499,14 @@ export default async function RecipePage({ params }: Props) {
                           <ThumbsUp className="w-3.5 h-3.5" aria-hidden="true" /> Helpful
                         </button>
                       </article>
-                    ))}
-                  </div>
-                </section>
-              )}
+                      ))}
+                    </div>
+                  </>
+                )}
+                
+                {/* Feedback Submission Form */}
+                <RecipeFeedbackForm recipeId={recipe.id} />
+              </section>
             </div>
 
             {/* ────── SIDEBAR ────── */}
