@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import { verifyAuth, requireRole, apiSuccess, apiError } from '@/lib/api-auth'
+import { revalidatePath } from 'next/cache'
 
 // PUT /api/categories/reorder
 export async function PUT(request: Request) {
@@ -16,6 +17,7 @@ export async function PUT(request: Request) {
             )
         )
 
+        revalidatePath('/', 'layout')
         return apiSuccess(null, 'Order updated')
     } catch { return apiError('Failed to reorder', 500) }
 }

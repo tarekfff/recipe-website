@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import { verifyAuth, requireRole, apiSuccess, apiError } from '@/lib/api-auth'
+import { revalidatePath } from 'next/cache'
 
 // POST /api/recipes/[slug]/publish — Admin: toggle publish status
 export async function POST(
@@ -24,16 +25,19 @@ export async function POST(
             },
         })
 
-        await prisma.auditLog.create({
-            data: {
-                userId: user!.id,
-                action: 'PUBLISH',
-                resource: 'recipe',
-                resourceId: recipe.id,
-                changes: { status: { from: recipe.status, to: newStatus } },
-            },
-        })
+        if (user!.id !== 'system-admin') {
+            await prisma.auditLog.create({
+                data: {
+                    userId: user!.id,
+                    action: 'PUBLISH',
+                    resource: 'recipe',
+                    resourceId: recipe.id,
+                    changes: { status: { from: recipe.status, to: newStatus } },
+                },
+            })
+        }
 
+        revalidatePath('/', 'layout')
         return apiSuccess(updated, `Recipe ${newStatus === 'PUBLISHED' ? 'published' : 'unpublished'}`)
     } catch (err) {
         console.error(err)

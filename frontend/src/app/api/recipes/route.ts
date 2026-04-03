@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db'
 import { apiPaginated, apiSuccess, apiError } from '@/lib/api-auth'
 
@@ -167,15 +168,18 @@ export async function POST(request: Request) {
         })
 
         // Audit log
-        await prisma.auditLog.create({
-            data: {
-                userId: user!.id,
-                action: 'CREATE',
-                resource: 'recipe',
-                resourceId: recipe.id,
-            },
-        })
+        if (user!.id !== 'system-admin') {
+            await prisma.auditLog.create({
+                data: {
+                    userId: user!.id,
+                    action: 'CREATE',
+                    resource: 'recipe',
+                    resourceId: recipe.id,
+                },
+            })
+        }
 
+        revalidatePath('/', 'layout')
         return apiSuccess(recipe, 'Recipe created', undefined)
     } catch (err) {
         console.error(err)

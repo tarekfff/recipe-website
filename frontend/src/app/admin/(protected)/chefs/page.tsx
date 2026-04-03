@@ -60,7 +60,7 @@ export default async function ChefsPage() {
                                     className="flex-1 flex items-center justify-center gap-1.5 text-xs text-gray-600 hover:text-brand-600 font-medium py-1.5 rounded-lg hover:bg-brand-50 transition-colors border border-gray-100">
                                     <Edit2 className="w-3.5 h-3.5" /> Edit
                                 </Link>
-                                <ChefActions id={chef.id} name={chef.name} />
+                                <ChefActions slug={chef.slug} name={chef.name} />
                             </div>
                         </div>
                     ))}

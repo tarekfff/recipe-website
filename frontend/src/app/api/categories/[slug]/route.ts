@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import { verifyAuth, requireRole, apiSuccess, apiError } from '@/lib/api-auth'
+import { revalidatePath } from 'next/cache'
 
 // GET /api/categories/[slug]
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
@@ -32,6 +33,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
                 image: body.image,
             },
         })
+        revalidatePath('/', 'layout')
         return apiSuccess(updated, 'Category updated')
     } catch { return apiError('Failed to update category', 500) }
 }
@@ -47,6 +49,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ s
         const cat = await prisma.category.findUnique({ where: { slug } })
         if (!cat) return apiError('Not found', 404)
         await prisma.category.delete({ where: { slug } })
+        revalidatePath('/', 'layout')
         return apiSuccess(null, 'Category deleted')
     } catch { return apiError('Failed to delete category', 500) }
 }

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import { verifyAuth, requireRole, apiSuccess, apiError } from '@/lib/api-auth'
+import { revalidatePath } from 'next/cache'
 
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string }> }) {
     try {
@@ -32,6 +33,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
             where: { slug },
             data: { name: body.name, bio: body.bio, avatar: body.avatar, social: body.social },
         })
+        revalidatePath('/', 'layout')
         return apiSuccess(updated, 'Chef updated')
     } catch { return apiError('Failed to update', 500) }
 }
@@ -44,6 +46,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ s
     try {
         const { slug } = await params
         await prisma.chef.delete({ where: { slug } })
+        revalidatePath('/', 'layout')
         return apiSuccess(null, 'Chef deleted')
     } catch { return apiError('Failed to delete', 500) }
 }

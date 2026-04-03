@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Trash2, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export function CategoryActions({ id, name, recipeCount }: { id: string; name: string; recipeCount: number }) {
+export function CategoryActions({ slug, name, recipeCount }: { slug: string; name: string; recipeCount: number }) {
     const [loading, setLoading] = useState(false)
     const router = useRouter()
 
@@ -14,7 +14,7 @@ export function CategoryActions({ id, name, recipeCount }: { id: string; name: s
         }
         if (!confirm(`Delete category "${name}"?`)) return
         setLoading(true)
-        await fetch(`/api/categories/${name}`, { method: 'DELETE' })
+        await fetch(`/api/categories/${slug}`, { method: 'DELETE' })
         router.refresh()
         setLoading(false)
     }

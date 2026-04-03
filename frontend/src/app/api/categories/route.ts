@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db'
 import { verifyAuth, requireRole, apiPaginated, apiSuccess, apiError } from '@/lib/api-auth'
 
@@ -55,10 +56,13 @@ export async function POST(request: Request) {
             data: { slug, name, nameAr, description, image, order },
         })
 
-        await prisma.auditLog.create({
-            data: { userId: user!.id, action: 'CREATE', resource: 'category', resourceId: category.id },
-        })
+        if (user!.id !== 'system-admin') {
+            await prisma.auditLog.create({
+                data: { userId: user!.id, action: 'CREATE', resource: 'category', resourceId: category.id },
+            })
+        }
 
+        revalidatePath('/', 'layout')
         return apiSuccess(category, 'Category created')
     } catch (err) {
         console.error(err)

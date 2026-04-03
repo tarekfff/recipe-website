@@ -80,7 +80,7 @@ export default async function CategoriesPage() {
                                                 className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
                                                 <Edit2 className="w-4 h-4" />
                                             </Link>
-                                            <CategoryActions id={cat.id} name={cat.name} recipeCount={cat._count.recipes} />
+                                            <CategoryActions slug={cat.slug} name={cat.name} recipeCount={cat._count.recipes} />
                                         </div>
                                     </td>
                                 </tr>

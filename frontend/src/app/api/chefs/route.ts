@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import { verifyAuth, requireRole, apiPaginated, apiSuccess, apiError } from '@/lib/api-auth'
+import { revalidatePath } from 'next/cache'
 
 export async function GET(request: Request) {
     try {
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
         }
 
         const chef = await prisma.chef.create({ data: { slug, name, bio, avatar, social } })
+        revalidatePath('/', 'layout')
         return apiSuccess(chef, 'Chef created')
     } catch { return apiError('Failed to create chef', 500) }
 }

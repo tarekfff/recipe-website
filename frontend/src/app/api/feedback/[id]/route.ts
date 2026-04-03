@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import { verifyAuth, requireRole, apiSuccess, apiError } from '@/lib/api-auth'
+import { revalidatePath } from 'next/cache'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -21,6 +22,7 @@ export async function PUT(request: Request, { params }: Params) {
             where: { id },
             data: { status },
         })
+        revalidatePath('/', 'layout')
         return apiSuccess(updated, `Feedback ${status.toLowerCase()}`)
     } catch { return apiError('Failed to update feedback', 500) }
 }
@@ -34,6 +36,7 @@ export async function DELETE(request: Request, { params }: Params) {
     try {
         const { id } = await params
         await prisma.feedback.delete({ where: { id } })
+        revalidatePath('/', 'layout')
         return apiSuccess(null, 'Feedback deleted')
     } catch { return apiError('Failed to delete feedback', 500) }
 }

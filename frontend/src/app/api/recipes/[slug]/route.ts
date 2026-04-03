@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db'
 import { verifyAuth, requireRole, apiSuccess, apiError } from '@/lib/api-auth'
 
@@ -120,15 +121,18 @@ export async function PUT(
             include: { category: true, chef: true, tags: true, seo: true },
         })
 
-        await prisma.auditLog.create({
-            data: {
-                userId: user!.id,
-                action: 'UPDATE',
-                resource: 'recipe',
-                resourceId: updated.id,
-            },
-        })
+        if (user!.id !== 'system-admin') {
+            await prisma.auditLog.create({
+                data: {
+                    userId: user!.id,
+                    action: 'UPDATE',
+                    resource: 'recipe',
+                    resourceId: updated.id,
+                },
+            })
+        }
 
+        revalidatePath('/', 'layout')
         return apiSuccess(updated, 'Recipe updated')
     } catch (err) {
         console.error(err)
@@ -155,15 +159,18 @@ export async function DELETE(
             data: { deletedAt: new Date(), status: 'ARCHIVED' },
         })
 
-        await prisma.auditLog.create({
-            data: {
-                userId: user!.id,
-                action: 'DELETE',
-                resource: 'recipe',
-                resourceId: recipe.id,
-            },
-        })
+        if (user!.id !== 'system-admin') {
+            await prisma.auditLog.create({
+                data: {
+                    userId: user!.id,
+                    action: 'DELETE',
+                    resource: 'recipe',
+                    resourceId: recipe.id,
+                },
+            })
+        }
 
+        revalidatePath('/', 'layout')
         return apiSuccess(null, 'Recipe deleted')
     } catch (err) {
         console.error(err)

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/db'
 import { PlusCircle, Search, Eye, Edit, ChevronLeft, ChevronRight } from 'lucide-react'
 import { RecipeStatusBadge } from '@/components/admin/StatusBadge'
+import { RecipeActions } from './RecipeActions'
 
 export const metadata: Metadata = { title: 'Recipes' }
 
@@ -137,11 +138,14 @@ export default async function RecipesPage({
                                     </div>
                                 </td>
                                 <td className="px-4 py-4 text-right">
-                                    <Link href={`/admin/recipes/${recipe.slug}/edit`}
-                                        className="inline-flex items-center gap-1 text-xs text-brand-600 hover:text-brand-800 font-medium px-2.5 py-1.5 rounded-lg hover:bg-brand-50 transition-colors">
-                                        <Edit className="w-3.5 h-3.5" />
-                                        Edit
-                                    </Link>
+                                    <div className="flex items-center justify-end gap-1">
+                                        <Link href={`/admin/recipes/${recipe.slug}/edit`}
+                                            className="inline-flex items-center gap-1 text-xs text-brand-600 hover:text-brand-800 font-medium px-2.5 py-1.5 rounded-lg hover:bg-brand-50 transition-colors">
+                                            <Edit className="w-3.5 h-3.5" />
+                                            Edit
+                                        </Link>
+                                        <RecipeActions slug={recipe.slug} title={recipe.title} />
+                                    </div>
                                 </td>
                             </tr>
                         ))}

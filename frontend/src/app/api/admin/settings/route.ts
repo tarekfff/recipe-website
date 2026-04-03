@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { requireRole, verifyAuth } from '@/lib/api-auth'
 import { z } from 'zod'
+import { revalidatePath } from 'next/cache'
 
 // Validation schema for the site settings API payload
 const settingsSchema = z.object({
@@ -93,6 +94,7 @@ export async function POST(req: Request) {
             }
         })
 
+        revalidatePath('/', 'layout')
         return NextResponse.json({ success: true, data: updatedSettings })
     } catch (error: any) {
         if (error.message === 'Unauthorized' || error.message === 'Forbidden') {

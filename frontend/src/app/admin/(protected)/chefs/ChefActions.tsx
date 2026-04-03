@@ -3,14 +3,14 @@ import { useState } from 'react'
 import { Trash2, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export function ChefActions({ id, name }: { id: string; name: string }) {
+export function ChefActions({ slug, name }: { slug: string; name: string }) {
     const [loading, setLoading] = useState(false)
     const router = useRouter()
 
     async function handleDelete() {
         if (!confirm(`Delete chef "${name}"? Their recipes will remain but won't have a chef.`)) return
         setLoading(true)
-        const res = await fetch(`/api/chefs/${id}`, { method: 'DELETE' })
+        const res = await fetch(`/api/chefs/${slug}`, { method: 'DELETE' })
         if (res.ok) router.refresh()
         setLoading(false)
     }
