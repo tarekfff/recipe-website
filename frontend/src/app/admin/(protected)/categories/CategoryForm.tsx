@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, ArrowLeft } from 'lucide-react'
+import { Loader2, Save, ArrowLeft, Upload } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -23,6 +23,7 @@ export default function CategoryForm({ category }: Props) {
     const [image, setImage] = useState(category?.image || '')
     const [order, setOrder] = useState(String(category?.order ?? 0))
     const [loading, setLoading] = useState(false)
+    const [uploading, setUploading] = useState(false)
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
@@ -90,12 +91,34 @@ export default function CategoryForm({ category }: Props) {
                             placeholder="Short description of this category..." />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Image URL</label>
-                            <input value={image} onChange={e => setImage(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                                placeholder="https://..." />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="sm:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Category Image URL</label>
+                            <div className="flex gap-2">
+                                <input value={image} onChange={e => setImage(e.target.value)}
+                                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                                    placeholder="https://..." />
+                                <label className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors cursor-pointer">
+                                    <Upload className="w-4 h-4" />
+                                    {uploading ? 'Uploading...' : 'Upload'}
+                                    <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
+                                        const file = e.target.files?.[0]
+                                        if (!file) return
+                                        setUploading(true)
+                                        try {
+                                            const formData = new FormData()
+                                            formData.append('file', file)
+                                            const res = await fetch('/api/upload', { method: 'POST', body: formData })
+                                            if (res.ok) {
+                                                const data = await res.json()
+                                                setImage(data.url)
+                                            } else toast.error('Failed to upload image')
+                                        } catch { toast.error('Failed to upload image') }
+                                        finally { setUploading(false) }
+                                    }} disabled={uploading} />
+                                </label>
+                            </div>
+                            {image && <img src={image} alt="preview" className="mt-2 w-40 h-24 object-cover rounded-lg border border-gray-100" />}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">Display Order</label>
