@@ -144,7 +144,7 @@ export default async function RecipesPage({
                                             <Edit className="w-3.5 h-3.5" />
                                             Edit
                                         </Link>
-                                        <RecipeActions slug={recipe.slug} title={recipe.title} />
+                                        <RecipeActions slug={recipe.slug} title={recipe.title} status={recipe.status} />
                                     </div>
                                 </td>
                             </tr>
