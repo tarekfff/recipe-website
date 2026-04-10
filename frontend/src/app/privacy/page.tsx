@@ -17,11 +17,11 @@ export default async function PrivacyPage() {
     return (
         <div className="min-h-screen bg-[#FAF7F2] text-[#1C1917] flex flex-col">
             <Navbar />
-            <main className="max-w-4xl mx-auto px-6 py-20 flex-grow">
-                <h1 className="text-4xl md:text-5xl font-display font-bold text-[#1C1917] mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-20 flex-grow">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[#1C1917] mb-3 sm:mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
                     Privacy Policy
                 </h1>
-                <p className="text-gray-500 mb-10">Last updated: October 2026</p>
+                <p className="text-gray-500 mb-6 sm:mb-10 text-sm sm:text-base">Last updated: October 2026</p>
                 
                 {settings?.privacyText ? (
                     <div className="prose prose-lg max-w-none text-[#44403C]" dangerouslySetInnerHTML={{ __html: settings.privacyText }} />

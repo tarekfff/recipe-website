@@ -30,22 +30,22 @@ export default function HomeFooter() {
     }, [])
 
     return (
-        <footer className="w-full pt-20 pb-14 px-6"
+        <footer className="w-full pt-12 sm:pt-20 pb-10 sm:pb-14 px-4 sm:px-6"
             style={{ background: 'linear-gradient(160deg, #1C1917 0%, #2A1F1B 50%, #1C1917 100%)' }}>
             <div className="max-w-5xl mx-auto flex flex-col items-center">
 
                 {/* Logo */}
-                <span className="font-display text-3xl font-bold tracking-tight mb-2"
+                <span className="font-display text-2xl sm:text-3xl font-bold tracking-tight mb-2"
                     style={{ color: 'var(--gold)' }}>
                     {siteName}
                 </span>
-                <span className="text-[10px] font-medium uppercase tracking-[0.3em] mb-10"
+                <span className="text-[10px] font-medium uppercase tracking-[0.3em] mb-8 sm:mb-10"
                     style={{ color: 'rgba(200,149,108,0.5)' }}>
                     Culinary Stories
                 </span>
 
                 {/* Social */}
-                <div className="flex justify-center space-x-5 mb-10">
+                <div className="flex justify-center space-x-4 sm:space-x-5 mb-8 sm:mb-10">
                     <a href={socialLinks?.pinterest || "https://pinterest.com/"} target="_blank" rel="noopener noreferrer"
                         className="w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300"
                         style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' }}
@@ -59,10 +59,10 @@ export default function HomeFooter() {
                 </div>
 
                 {/* Links */}
-                <div className="flex flex-wrap justify-center gap-x-5 gap-y-3 mb-12">
+                <div className="flex flex-wrap justify-center gap-x-4 sm:gap-x-5 gap-y-2 sm:gap-y-3 mb-8 sm:mb-12">
                     {links.map(({ label, href, icon: Icon }) => (
                         <Link key={label} href={href}
-                            className="flex items-center gap-1.5 text-sm transition-colors duration-200"
+                            className="flex items-center gap-1.5 text-xs sm:text-sm transition-colors duration-200"
                             style={{ color: 'rgba(255,255,255,0.45)' }}
                             onMouseOver={e => (e.currentTarget.style.color = 'var(--gold)')}
                             onMouseOut={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
@@ -80,7 +80,7 @@ export default function HomeFooter() {
 
             {/* Back-to-top */}
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className={`fixed right-6 p-3 rounded-full shadow-xl transition-all duration-500 z-50
+                className={`fixed right-4 sm:right-6 p-2.5 sm:p-3 rounded-full shadow-xl transition-all duration-500 z-50
                             ${showTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
                 style={{
                     bottom: 100,

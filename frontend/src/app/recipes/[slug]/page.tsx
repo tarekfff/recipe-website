@@ -724,7 +724,7 @@ export default async function RecipePage({ params }: Props) {
           --shadow-md:   0 4px 20px rgba(28,25,23,.08);
           --shadow-lg:   0 8px 40px rgba(28,25,23,.10);
           --font-serif:  'Cormorant Garamond', Georgia, serif;
-          --font-body:   'Outfit', system-ui, sans-serif;
+          --font-body:   'Poppins', system-ui, sans-serif;
           --max-w:       1060px;
         }
 
@@ -733,9 +733,11 @@ export default async function RecipePage({ params }: Props) {
           min-height: 100vh;
           background: var(--cream);
           font-family: var(--font-body);
-          color: var(--text-base);
-          font-size: 19px;
-          line-height: 1.8;
+          color: #2D2727;
+          font-size: 17px;
+          line-height: 1.75;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
         }
 
         /* ── Header ── */
@@ -756,31 +758,31 @@ export default async function RecipePage({ params }: Props) {
         .rp-logo { border-radius: 10px; }
         .rp-breadcrumb {
           display: flex; align-items: center;
-          gap: 6px; min-width: 0; overflow: hidden;
-          font-size: 13px;
+          gap: 8px; min-width: 0; overflow: hidden;
+          font-size: 14px;
         }
-        .rp-crumb-sep { width: 14px; height: 14px; color: var(--brown-400); flex-shrink: 0; }
+        .rp-crumb-sep { width: 14px; height: 14px; color: #B8A99A; flex-shrink: 0; }
         .rp-crumb-link {
-          color: var(--brown-500); font-weight: 500;
+          color: #7A6E64; font-weight: 500;
           text-decoration: none; flex-shrink: 0;
           transition: color .2s;
         }
         .rp-crumb-link:hover { color: var(--accent); }
         .rp-crumb-current {
-          color: var(--brown-700); font-weight: 600;
+          color: #2D2727; font-weight: 600;
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .rp-jump-btn {
           flex-shrink: 0;
-          font-size: 12px; font-weight: 700;
-          padding: 8px 20px;
+          font-size: 13px; font-weight: 600;
+          padding: 10px 24px;
           border-radius: 99px;
           background: var(--accent);
           color: #fff;
           text-decoration: none;
-          transition: background .2s, box-shadow .2s;
-          box-shadow: 0 2px 12px rgba(212,99,26,.35);
-          letter-spacing: .02em;
+          transition: all .25s ease;
+          box-shadow: 0 4px 16px rgba(123,45,59,.25);
+          letter-spacing: .03em;
         }
         .rp-jump-btn:hover { background: var(--accent-hover); }
 
@@ -794,50 +796,52 @@ export default async function RecipePage({ params }: Props) {
         /* ── Top bar ── */
         .rp-top-bar {
           display: flex; align-items: center;
-          gap: 10px; flex-wrap: wrap;
-          margin-bottom: 20px;
+          gap: 12px; flex-wrap: wrap;
+          margin-bottom: 24px;
         }
         .rp-back-link {
           display: inline-flex; align-items: center;
-          gap: 5px; font-size: 13px; font-weight: 600;
-          color: var(--brown-500); text-decoration: none;
+          gap: 6px; font-size: 14px; font-weight: 600;
+          color: #7A6E64; text-decoration: none;
           transition: color .2s;
         }
         .rp-back-link:hover { color: var(--accent); }
         .rp-category-pill {
-          font-size: 11px; font-weight: 700;
+          font-size: 12px; font-weight: 700;
           text-transform: uppercase; letter-spacing: .1em;
           color: var(--accent); text-decoration: none;
-          padding: 3px 10px;
+          padding: 5px 14px;
           background: var(--accent-light);
           border-radius: 99px;
-          transition: background .2s;
+          transition: all .2s;
         }
-        .rp-category-pill:hover { background: var(--brown-200); }
+        .rp-category-pill:hover { background: #e8d5d8; color: var(--accent-hover); }
         .rp-tag-pill {
-          font-size: 11px;
-          color: var(--brown-500);
-          padding: 3px 10px;
-          background: var(--brown-100);
+          font-size: 12px; font-weight: 500;
+          color: #5C504A;
+          padding: 5px 14px;
+          background: #F0EBE3;
           border-radius: 99px;
         }
 
         /* ── Title & description ── */
         .rp-title {
           font-family: var(--font-serif);
-          font-size: clamp(2.4rem, 5.5vw, 3.6rem);
+          font-size: clamp(2.4rem, 5.5vw, 3.8rem);
           font-weight: 700;
-          line-height: 1.12;
-          color: var(--brown-900);
-          margin: 0 0 22px;
-          letter-spacing: -.01em;
+          line-height: 1.1;
+          color: #1A1614;
+          margin: 0 0 20px;
+          letter-spacing: -.02em;
         }
         .rp-description {
-          font-size: 22px;
-          line-height: 1.7;
-          color: var(--brown-600);
-          margin: 0 0 30px;
-          max-width: 72ch;
+          font-family: var(--font-body);
+          font-size: 19px;
+          font-weight: 400;
+          line-height: 1.75;
+          color: #4A413B;
+          margin: 0 0 32px;
+          max-width: 68ch;
         }
 
         /* ── Meta row ── */
@@ -855,50 +859,53 @@ export default async function RecipePage({ params }: Props) {
         }
         .rp-author-link {
           display: flex; align-items: center;
-          gap: 8px; text-decoration: none;
+          gap: 10px; text-decoration: none;
         }
         .rp-author-avatar {
-          width: 34px; height: 34px;
+          width: 38px; height: 38px;
           border-radius: 50%;
           overflow: hidden;
           background: var(--cream-deep);
           display: flex; align-items: center; justify-content: center;
           flex-shrink: 0;
-          color: var(--brown-500);
+          color: #7A6E64;
+          border: 2px solid #EAE6DF;
         }
         .rp-author-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .rp-author-name {
           font-size: 15px; font-weight: 600;
-          color: var(--brown-700);
+          color: #2D2727;
           transition: color .2s;
         }
         .rp-author-link:hover .rp-author-name { color: var(--accent); }
         .rp-pub-date {
-          font-size: 14px; color: var(--text-faint);
+          font-size: 14px; font-weight: 400; color: #8C8279;
         }
         .rp-rating-inline {
-          display: flex; align-items: center; gap: 6px;
+          display: flex; align-items: center; gap: 8px;
         }
         .rp-rating-text {
-          font-size: 13px; color: var(--text-muted);
+          font-size: 14px; font-weight: 500; color: #5C504A;
         }
         .rp-actions {
-          display: flex; gap: 6px;
+          display: flex; gap: 8px;
         }
         .rp-action-btn {
-          width: 34px; height: 34px;
+          width: 38px; height: 38px;
           border-radius: 50%;
-          border: 1px solid var(--cream-border);
-          background: var(--white);
-          color: var(--brown-500);
+          border: 1.5px solid #E2DDD5;
+          background: #fff;
+          color: #7A6E64;
           display: flex; align-items: center; justify-content: center;
           cursor: pointer;
-          transition: border-color .2s, color .2s, background .2s;
+          transition: all .25s ease;
         }
         .rp-action-btn:hover {
           border-color: var(--accent);
-          color: var(--accent);
-          background: var(--accent-light);
+          color: #fff;
+          background: var(--accent);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(123,45,59,.2);
         }
 
         /* ── Hero image ── */
@@ -917,58 +924,59 @@ export default async function RecipePage({ params }: Props) {
         .rp-stats-bar {
           display: flex;
           flex-wrap: wrap;
-          background: var(--white);
-          border: 1px solid var(--cream-border);
-          border-radius: var(--radius-lg);
+          background: #fff;
+          border: 1px solid #E8E3DB;
+          border-radius: var(--radius-xl);
           overflow: hidden;
           margin-bottom: 48px;
-          box-shadow: var(--shadow-sm);
+          box-shadow: 0 2px 16px rgba(0,0,0,0.04);
         }
         .rp-stat-cell {
           flex: 1 1 120px;
           display: flex; flex-direction: column;
           align-items: center; justify-content: center;
-          padding: 22px 16px;
-          border-right: 1px solid var(--cream-border);
+          padding: 24px 16px;
+          border-right: 1px solid #F0EBE3;
           text-align: center;
-          gap: 4px;
+          gap: 6px;
         }
         .rp-stat-cell:last-child { border-right: none; }
-        .rp-stat-icon { color: var(--accent); margin-bottom: 4px; }
+        .rp-stat-icon { color: var(--accent); margin-bottom: 4px; opacity: 0.85; }
         .rp-stat-label {
-          font-size: 11px; font-weight: 700;
-          text-transform: uppercase; letter-spacing: .08em;
-          color: var(--text-faint);
+          font-size: 12px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: .1em;
+          color: #9C938A;
         }
         .rp-stat-value {
-          font-family: var(--font-serif);
-          font-size: 21px; font-weight: 700;
-          color: var(--brown-900);
+          font-family: var(--font-body);
+          font-size: 20px; font-weight: 700;
+          color: #1A1614;
+          letter-spacing: -0.01em;
         }
         .rp-stat-extra {
-          flex-direction: row; gap: 14px;
-          background: #faf6f0;
+          flex-direction: row; gap: 16px;
+          background: #FAF7F2;
           flex-basis: 100%;
-          border-top: 1px solid var(--cream-border);
+          border-top: 1px solid #F0EBE3;
           border-right: none;
           justify-content: center;
-          padding: 14px;
+          padding: 16px;
         }
         .rp-difficulty-badge {
-          display: inline-flex; align-items: center; gap: 5px;
-          font-size: 11px; font-weight: 700;
+          display: inline-flex; align-items: center; gap: 6px;
+          font-size: 12px; font-weight: 700;
           text-transform: uppercase; letter-spacing: .06em;
-          padding: 4px 12px;
+          padding: 5px 14px;
           border-radius: 99px;
         }
         .rp-difficulty-dot {
-          width: 6px; height: 6px;
+          width: 7px; height: 7px;
           border-radius: 50%;
           flex-shrink: 0;
         }
         .rp-calories {
-          display: flex; align-items: center; gap: 5px;
-          font-size: 14px; color: var(--brown-600);
+          display: flex; align-items: center; gap: 6px;
+          font-size: 15px; font-weight: 500; color: #4A413B;
         }
 
         /* ── Two-column layout ── */
@@ -1019,29 +1027,31 @@ export default async function RecipePage({ params }: Props) {
           margin-bottom: 16px;
         }
         .rp-card-eyebrow {
-          font-size: 10px; font-weight: 800;
-          text-transform: uppercase; letter-spacing: .14em;
-          color: var(--accent);
-          margin-bottom: 6px;
+          font-size: 13px; font-weight: 800;
+          text-transform: uppercase; letter-spacing: .16em;
+          color: #FFD1DC;
+          margin-bottom: 8px;
         }
         .rp-card-title {
           font-family: var(--font-serif);
-          font-size: 1.75rem; font-weight: 700;
-          color: #fff; line-height: 1.2;
-          margin: 0 0 6px;
+          font-size: 2.4rem; font-weight: 800;
+          color: #ffffff; line-height: 1.15;
+          margin: 0 0 10px;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.25);
         }
         .rp-card-subtitle {
-          font-size: 14px; color: #C8956C; margin: 0;
+          font-size: 17px; color: #F8E5D6; margin: 0; font-weight: 500;
+          letter-spacing: .02em;
         }
         .rp-card-meta {
-          display: grid; gap: 4px;
+          display: grid; gap: 6px;
           text-align: right; flex-shrink: 0;
         }
         .rp-card-meta dt {
-          font-size: 11px; color: #A8727D; display: inline;
+          font-size: 14px; color: #FFD1DC; display: inline; font-weight: 500;
         }
         .rp-card-meta dd {
-          font-size: 13px; font-weight: 600; color: #C8956C;
+          font-size: 16px; font-weight: 700; color: #ffffff;
           margin: 0; display: inline;
         }
         .rp-card-meta div { white-space: nowrap; }
@@ -1065,43 +1075,48 @@ export default async function RecipePage({ params }: Props) {
           padding: 32px;
         }
         .rp-card-section-title {
-          font-size: 19px; font-weight: 700;
-          color: var(--brown-900);
-          display: flex; align-items: center; gap: 12px;
-          margin: 0 0 24px;
+          font-size: 24px; font-weight: 700;
+          color: #2D2727;
+          display: flex; align-items: center; gap: 14px;
+          margin: 0 0 28px;
+          letter-spacing: -0.01em;
         }
         .rp-card-section-num {
-          width: 28px; height: 28px;
+          width: 32px; height: 32px;
           background: linear-gradient(135deg, var(--accent), var(--accent-hover));
           color: #fff;
           border-radius: 50%;
           display: inline-flex; align-items: center; justify-content: center;
-          font-size: 12px; font-weight: 800;
+          font-size: 15px; font-weight: 700;
           flex-shrink: 0;
+          box-shadow: 0 4px 10px rgba(123, 45, 59, 0.2);
         }
         .rp-servings-note {
-          font-size: 13px; font-weight: 400;
-          color: var(--text-faint);
+          font-size: 16px; font-weight: 500;
+          color: #8C7B76;
         }
         .rp-ingredients-list {
           list-style: none; padding: 0; margin: 0;
-          display: flex; flex-direction: column; gap: 2px;
+          display: flex; flex-direction: column; gap: 10px;
         }
         .rp-ingredient-item {
-          display: flex; align-items: flex-start; gap: 12px;
-          padding: 12px 14px;
-          border-radius: var(--radius-sm);
-          font-size: 19px;
-          line-height: 1.65;
-          color: var(--brown-700);
-          transition: background .15s;
+          display: flex; align-items: flex-start; gap: 16px;
+          padding: 16px 20px;
+          border-radius: var(--radius-lg);
+          font-size: 20px;
+          font-weight: 500;
+          line-height: 1.6;
+          color: #352E2D;
+          background: #FAFAF8;
+          border: 1px solid #EAE6DF;
+          transition: all .2s ease;
           cursor: pointer;
         }
-        .rp-ingredient-item:hover { background: var(--cream); }
+        .rp-ingredient-item:hover { background: #F4EFE6; border-color: #D6CBB9; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.03); }
         .rp-check-icon {
-          width: 16px; height: 16px;
+          width: 22px; height: 22px;
           color: var(--accent); flex-shrink: 0;
-          margin-top: 3px;
+          margin-top: 5px;
         }
         .rp-card-divider {
           border: none;
@@ -1110,26 +1125,37 @@ export default async function RecipePage({ params }: Props) {
         }
         .rp-steps-list {
           list-style: none; padding: 0; margin: 0;
-          display: flex; flex-direction: column; gap: 20px;
+          display: flex; flex-direction: column; gap: 24px;
         }
         .rp-step-item {
-          display: flex; gap: 16px;
+          display: flex; gap: 20px;
+          background: #fff;
+          padding: 22px;
+          border-radius: var(--radius-lg);
+          border: 1px solid #EAE6DF;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+          transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .rp-step-item:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.06);
         }
         .rp-step-num {
-          width: 36px; height: 36px;
+          width: 40px; height: 40px;
           background: linear-gradient(135deg, var(--accent), var(--accent-hover));
           color: #fff;
           border-radius: 50%;
           display: flex; align-items: center; justify-content: center;
-          font-size: 14px; font-weight: 800;
+          font-size: 16px; font-weight: 700;
           flex-shrink: 0;
-          box-shadow: 0 2px 8px rgba(212,99,26,.3);
+          box-shadow: 0 4px 12px rgba(123, 45, 59, 0.25);
         }
         .rp-step-body {
-          padding-top: 6px;
-          font-size: 19px;
-          line-height: 1.8;
-          color: var(--brown-700);
+          padding-top: 3px;
+          font-size: 20px;
+          font-weight: 400;
+          line-height: 1.7;
+          color: #352E2D;
         }
         .rp-step-body p { margin: 0; }
         .rp-step-img-wrap {
@@ -1142,35 +1168,39 @@ export default async function RecipePage({ params }: Props) {
         }
         .rp-card-footer {
           display: flex; flex-wrap: wrap;
-          align-items: center; gap: 18px;
+          align-items: center; gap: 20px;
           padding-top: 24px;
           margin-top: 28px;
-          border-top: 1px solid var(--cream-border);
-          font-size: 13px;
-          color: var(--brown-500);
+          border-top: 1px solid #EAE6DF;
+          font-size: 15px;
+          font-weight: 500;
+          color: #7A6E64;
         }
         .rp-card-footer span {
-          display: flex; align-items: center; gap: 5px;
+          display: flex; align-items: center; gap: 6px;
         }
-        .rp-card-footer strong { color: var(--brown-900); }
+        .rp-card-footer strong { color: #2D2727; font-weight: 700; }
 
         /* ── Tips ── */
         .rp-tips-box {
-          background: var(--green-bg);
-          border: 1px solid var(--green-border);
+          background: #fdfbf7;
+          border: 1px solid var(--accent);
+          border-left: 6px solid var(--accent);
           border-radius: var(--radius-lg);
-          padding: 28px;
-          margin-bottom: 40px;
+          padding: 32px;
+          margin-bottom: 48px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.03);
         }
         .rp-tips-list {
           list-style: none; padding: 0; margin: 0;
-          display: flex; flex-direction: column; gap: 12px;
+          display: flex; flex-direction: column; gap: 16px;
         }
         .rp-tip-item {
-          display: flex; align-items: flex-start; gap: 10px;
-          font-size: 15px; color: #2d5218;
+          display: flex; align-items: flex-start; gap: 14px;
+          font-size: 20px; font-weight: 500; color: #111;
+          line-height: 1.6;
         }
-        .rp-tip-icon { font-size: 16px; flex-shrink: 0; }
+        .rp-tip-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
 
         /* ── Storage ── */
         .rp-storage { margin-bottom: 40px; }
@@ -1202,64 +1232,69 @@ export default async function RecipePage({ params }: Props) {
         /* ── Section titles ── */
         .rp-section-title {
           font-family: var(--font-serif);
-          font-size: 1.5rem; font-weight: 700;
-          color: var(--brown-900);
-          margin: 0 0 20px;
+          font-size: 1.8rem; font-weight: 700;
+          color: #1A1614;
+          margin: 0 0 24px;
           line-height: 1.25;
         }
 
         /* ── Reviews ── */
-        .rp-reviews { margin-bottom: 40px; }
+        .rp-reviews { margin-bottom: 48px; }
         .rp-reviews-header {
           display: flex; align-items: center;
           justify-content: space-between;
-          margin-bottom: 20px;
+          margin-bottom: 24px;
         }
         .rp-reviews-count {
           font-size: 1rem; font-weight: 400;
-          color: var(--text-faint);
-          margin-left: 6px;
+          color: #9C938A;
+          margin-left: 8px;
         }
         .rp-reviews-avg {
-          display: flex; align-items: center; gap: 8px;
-          font-size: 15px; color: var(--brown-900);
+          display: flex; align-items: center; gap: 10px;
+          font-size: 16px; font-weight: 600; color: #2D2727;
         }
         .rp-reviews-list {
-          display: flex; flex-direction: column; gap: 14px;
+          display: flex; flex-direction: column; gap: 16px;
         }
         .rp-review-card {
-          background: var(--white);
-          border: 1px solid var(--cream-border);
-          border-radius: var(--radius-md);
-          padding: 20px 22px;
+          background: #fff;
+          border: 1px solid #EAE6DF;
+          border-radius: var(--radius-lg);
+          padding: 24px 26px;
+          transition: box-shadow .2s ease;
+        }
+        .rp-review-card:hover {
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
         }
         .rp-review-header {
           display: flex; align-items: flex-start;
           justify-content: space-between;
-          margin-bottom: 10px;
+          margin-bottom: 14px;
         }
         .rp-reviewer-name {
-          font-size: 14px; font-weight: 700;
-          color: var(--brown-900); margin: 0;
+          font-size: 16px; font-weight: 700;
+          color: #2D2727; margin: 0;
         }
         .rp-review-date {
-          font-size: 12px; color: var(--text-faint);
-          display: block; margin-top: 2px;
+          font-size: 13px; font-weight: 400; color: #9C938A;
+          display: block; margin-top: 3px;
         }
         .rp-review-comment {
-          font-size: 18px; line-height: 1.75;
-          color: var(--brown-600); margin: 0 0 14px;
+          font-size: 17px; line-height: 1.75;
+          font-weight: 400;
+          color: #4A413B; margin: 0 0 16px;
         }
         .rp-helpful-btn {
-          display: inline-flex; align-items: center; gap: 5px;
-          font-size: 12px; font-weight: 600;
-          color: var(--text-faint);
-          background: none; border: 1px solid var(--cream-border);
-          border-radius: 99px; padding: 4px 12px;
+          display: inline-flex; align-items: center; gap: 6px;
+          font-size: 13px; font-weight: 600;
+          color: #9C938A;
+          background: none; border: 1.5px solid #E2DDD5;
+          border-radius: 99px; padding: 6px 16px;
           cursor: pointer;
-          transition: color .2s, border-color .2s;
+          transition: all .25s ease;
         }
-        .rp-helpful-btn:hover { color: var(--accent); border-color: var(--accent); }
+        .rp-helpful-btn:hover { color: #fff; background: var(--accent); border-color: var(--accent); }
 
         /* ══════════════════════
            SIDEBAR
@@ -1271,70 +1306,72 @@ export default async function RecipePage({ params }: Props) {
           height: fit-content;
         }
         .rp-sidebar-eyebrow {
-          font-size: 10px; font-weight: 800;
-          text-transform: uppercase; letter-spacing: .12em;
-          color: var(--accent); margin: 0 0 12px;
+          font-size: 11px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: .14em;
+          color: var(--accent); margin: 0 0 14px;
         }
         .rp-sidebar-section-title {
-          font-size: 11px; font-weight: 800;
-          text-transform: uppercase; letter-spacing: .1em;
-          color: var(--text-faint); margin: 0 0 12px;
+          font-size: 12px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: .12em;
+          color: #9C938A; margin: 0 0 14px;
         }
 
         /* Chef card */
         .rp-chef-card {
-          background: var(--white);
-          border: 1px solid var(--cream-border);
+          background: #fff;
+          border: 1px solid #EAE6DF;
           border-radius: var(--radius-lg);
-          padding: 20px;
-          box-shadow: var(--shadow-sm);
+          padding: 22px;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.03);
           border-top: 3px solid var(--accent);
         }
         .rp-chef-info {
-          display: flex; gap: 12px;
-          margin-bottom: 14px;
+          display: flex; gap: 14px;
+          margin-bottom: 16px;
         }
         .rp-chef-avatar {
           width: 52px; height: 52px;
           border-radius: 50%; overflow: hidden; flex-shrink: 0;
-          background: var(--cream-deep);
+          background: #F0EBE3;
           display: flex; align-items: center; justify-content: center;
-          color: var(--brown-500);
+          color: #7A6E64;
+          border: 2px solid #EAE6DF;
         }
         .rp-chef-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .rp-chef-name {
-          font-family: var(--font-serif);
-          font-size: 16px; font-weight: 700;
-          color: var(--brown-900); text-decoration: none;
+          font-family: var(--font-body);
+          font-size: 17px; font-weight: 700;
+          color: #2D2727; text-decoration: none;
           display: block; margin-bottom: 4px;
           transition: color .2s;
         }
         .rp-chef-name:hover { color: var(--accent); }
         .rp-chef-bio {
-          font-size: 12px; line-height: 1.5;
-          color: var(--text-muted);
+          font-size: 14px; line-height: 1.55;
+          font-weight: 400;
+          color: #6B6058;
           display: -webkit-box; -webkit-line-clamp: 3;
           -webkit-box-orient: vertical; overflow: hidden;
           margin: 0;
         }
         .rp-chef-all-btn {
           display: block; width: 100%; text-align: center;
-          font-size: 12px; font-weight: 700;
-          padding: 9px;
+          font-size: 14px; font-weight: 600;
+          padding: 10px;
           border-radius: var(--radius-sm);
           background: var(--accent-light);
           color: var(--accent);
           text-decoration: none;
-          transition: background .2s;
+          transition: all .25s ease;
         }
-        .rp-chef-all-btn:hover { background: var(--brown-200); }
+        .rp-chef-all-btn:hover { background: var(--accent); color: #fff; }
 
         /* Nutrition card */
         .rp-nutrition-card {
-          background: var(--white);
-          border: 1px solid var(--cream-border);
-          border-radius: var(--radius-md);
-          padding: 18px 20px;
+          background: #fff;
+          border: 1px solid #EAE6DF;
+          border-radius: var(--radius-lg);
+          padding: 20px 22px;
         }
         .rp-nutrition-list {
           display: flex; flex-direction: column;
@@ -1343,35 +1380,35 @@ export default async function RecipePage({ params }: Props) {
         .rp-nutrition-row {
           display: flex; align-items: center;
           justify-content: space-between;
-          padding: 9px 0;
-          border-bottom: 1px solid var(--cream-deep);
-          font-size: 14px;
+          padding: 11px 0;
+          border-bottom: 1px solid #F0EBE3;
+          font-size: 15px;
         }
         .rp-nutrition-row:last-child { border-bottom: none; }
-        .rp-nutrition-row dt { color: var(--brown-600); font-weight: 400; }
-        .rp-nutrition-row dd { margin: 0; color: var(--brown-900); }
+        .rp-nutrition-row dt { color: #6B6058; font-weight: 500; }
+        .rp-nutrition-row dd { margin: 0; color: #2D2727; font-weight: 600; }
 
         /* Tags card */
         .rp-tags-card {
-          background: var(--white);
-          border: 1px solid var(--cream-border);
-          border-radius: var(--radius-md);
-          padding: 18px 20px;
+          background: #fff;
+          border: 1px solid #EAE6DF;
+          border-radius: var(--radius-lg);
+          padding: 20px 22px;
         }
         .rp-tags-list {
           list-style: none; padding: 0; margin: 0;
-          display: flex; flex-wrap: wrap; gap: 7px;
+          display: flex; flex-wrap: wrap; gap: 8px;
         }
         .rp-tag-link {
-          font-size: 12px; font-weight: 500;
-          color: var(--brown-500);
-          background: var(--cream-deep);
-          padding: 5px 12px;
+          font-size: 13px; font-weight: 600;
+          color: #5C504A;
+          background: #F4F0EA;
+          padding: 6px 16px;
           border-radius: 99px;
           text-decoration: none;
-          transition: background .2s, color .2s;
+          transition: all .25s ease;
         }
-        .rp-tag-link:hover { background: var(--accent-light); color: var(--accent); }
+        .rp-tag-link:hover { background: var(--accent); color: #fff; }
 
         /* Page nav */
         .rp-page-nav {
@@ -1425,10 +1462,10 @@ export default async function RecipePage({ params }: Props) {
         }
         .rp-fav-card-title {
           font-family: var(--font-body);
-          font-size: 13px;
-          font-weight: 800;
+          font-size: 14px;
+          font-weight: 700;
           line-height: 1.4;
-          color: #2a1400;
+          color: #2D2727;
           margin: 0;
         }
         .rp-page-nav-list {
@@ -1437,16 +1474,17 @@ export default async function RecipePage({ params }: Props) {
         }
         .rp-page-nav-link {
           display: block;
-          font-size: 13px; font-weight: 500;
-          color: var(--brown-500);
+          font-size: 14px; font-weight: 500;
+          color: #6B6058;
           text-decoration: none;
-          padding: 5px 8px;
+          padding: 7px 10px;
           border-radius: var(--radius-sm);
-          transition: background .15s, color .15s;
+          transition: all .2s ease;
         }
         .rp-page-nav-link:hover {
-          background: var(--cream);
+          background: var(--accent-light);
           color: var(--accent);
+          padding-left: 14px;
         }
 
         /* ── Related ── */
@@ -1505,96 +1543,99 @@ export default async function RecipePage({ params }: Props) {
           display: flex; align-items: center; justify-content: center;
           font-size: 2rem;
         }
-        .rp-related-info { padding: 14px 16px; }
+        .rp-related-info { padding: 16px 18px; }
         .rp-related-title {
-          font-family: var(--font-serif);
-          font-size: 15px; font-weight: 700;
-          color: var(--brown-900);
-          line-height: 1.35;
+          font-family: var(--font-body);
+          font-size: 16px; font-weight: 700;
+          color: #2D2727;
+          line-height: 1.4;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          margin: 0 0 7px;
-          transition: color .2s;
+          margin: 0 0 8px;
+          transition: color .25s;
         }
         .rp-related-card:hover .rp-related-title { color: var(--accent); }
         .rp-related-rating {
-          display: flex; align-items: center; gap: 4px;
-          font-size: 12px; color: var(--text-faint);
+          display: flex; align-items: center; gap: 5px;
+          font-size: 14px; font-weight: 600; color: #7A6E64;
         }
 
         /* ── Footer ── */
         .rp-footer {
-          background: linear-gradient(160deg, #1C1917 0%, #2A1F1B 50%, #1C1917 100%);
-          color: rgba(255,255,255,0.5);
-          padding: 48px 24px;
+          background: linear-gradient(160deg, #1A1614 0%, #2D2420 50%, #1A1614 100%);
+          color: rgba(255,255,255,0.55);
+          padding: 56px 24px;
         }
         .rp-footer-inner {
           max-width: var(--max-w);
           margin: 0 auto;
           display: flex; flex-wrap: wrap;
           align-items: center; justify-content: space-between;
-          gap: 16px;
+          gap: 20px;
         }
         .rp-footer-brand {
-          display: flex; align-items: center; gap: 10px;
-          font-size: 15px; font-weight: 600;
-          color: #C8956C;
+          display: flex; align-items: center; gap: 12px;
+          font-size: 16px; font-weight: 600;
+          color: #D4A574;
         }
-        .rp-footer-logo { border-radius: 8px; opacity: .7; }
+        .rp-footer-logo { border-radius: 10px; opacity: .8; }
         .rp-footer-copy {
-          font-size: 13px;
-          color: rgba(255,255,255,0.3);
+          font-size: 14px;
+          font-weight: 400;
+          color: rgba(255,255,255,0.35);
           margin: 0;
         }
         .rp-footer-links {
           list-style: none; padding: 0; margin: 0;
-          display: flex; gap: 20px;
+          display: flex; gap: 24px;
         }
         .rp-footer-link {
-          font-size: 13px; color: rgba(255,255,255,0.45);
+          font-size: 14px; font-weight: 500;
+          color: rgba(255,255,255,0.5);
           text-decoration: none;
-          transition: color .2s;
+          transition: color .25s;
         }
-        .rp-footer-link:hover { color: #C8956C; }
+        .rp-footer-link:hover { color: #D4A574; }
 
         /* ══════════════════════════════════════════════════
            RICH BLOG / CMS CONTENT  (.recipe-content)
         ══════════════════════════════════════════════════ */
         .recipe-content {
-          font-family: var(--font-serif);
-          font-size: 23px; line-height: 1.95;
-          color: #1C1917;
-          margin-bottom: 48px;
+          font-family: var(--font-body);
+          font-size: 22px; line-height: 1.85;
+          font-weight: 400;
+          color: #111;
+          margin-bottom: 56px;
         }
         .recipe-content > *:first-child { margin-top: 0; }
 
         .recipe-content h2 {
           font-family: var(--font-serif);
-          font-size: 1.65rem; font-weight: 700;
-          color: var(--brown-900);
-          margin: 2.5rem 0 .75rem;
-          line-height: 1.25;
-          padding-left: 16px;
-          border-left: 4px solid var(--accent);
+          font-size: 2.2rem; font-weight: 800;
+          color: #000;
+          margin: 3rem 0 1rem;
+          line-height: 1.3;
+          padding-left: 20px;
+          border-left: 6px solid var(--accent);
         }
         .recipe-content h3 {
-          font-family: var(--font-serif);
-          font-size: 1.2rem; font-weight: 700;
-          color: var(--brown-800, #4a2e10);
-          margin: 2rem 0 .5rem;
+          font-family: var(--font-body);
+          font-size: 1.6rem; font-weight: 700;
+          color: #111;
+          margin: 2.5rem 0 .75rem;
         }
-        .recipe-content p { margin: 0 0 1.4rem; }
+        .recipe-content p { margin: 0 0 1.6rem; }
 
         .recipe-content ul {
-          list-style: none; padding: 0; margin: 0 0 1.4rem;
+          list-style: none; padding: 0; margin: 0 0 1.6rem;
         }
         .recipe-content ul li {
-          display: flex; align-items: flex-start; gap: 10px;
-          padding: 7px 0;
+          display: flex; align-items: flex-start; gap: 14px;
+          padding: 10px 0;
           border-bottom: 1px solid var(--cream-border);
-          font-size: 16px;
+          font-size: 20px; font-weight: 500;
         }
         .recipe-content ul li:last-child { border-bottom: none; }
         .recipe-content ul li::before {
@@ -1678,14 +1719,166 @@ export default async function RecipePage({ params }: Props) {
         .recipe-content table tr:last-child td { border-bottom: none; }
 
         /* ── Responsive ── */
+
+        /* Tablet */
+        @media (max-width: 880px) {
+          .rp-layout { grid-template-columns: 1fr; }
+          .rp-sidebar { position: static; }
+          .rp-related-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Mobile */
         @media (max-width: 640px) {
-          .rp-main { padding: 24px 16px 60px; }
-          .rp-card-body { padding: 22px 18px; }
-          .rp-card-header { padding: 22px 20px; }
-          .rp-stats-bar { flex-direction: column; }
-          .rp-stat-cell { border-right: none; border-bottom: 1px solid var(--cream-border); }
+          .rp-root { font-size: 16px; line-height: 1.7; }
+          .rp-main { padding: 20px 14px 48px; }
+
+          /* Header / breadcrumb */
+          .rp-header-inner { height: 50px; padding: 0 14px; }
+          .rp-breadcrumb { font-size: 12px; gap: 4px; }
+          .rp-jump-btn { font-size: 11px; padding: 7px 14px; }
+
+          /* Top bar */
+          .rp-top-bar { gap: 8px; margin-bottom: 16px; }
+          .rp-back-link { font-size: 13px; }
+          .rp-category-pill { font-size: 11px; padding: 4px 10px; }
+          .rp-tag-pill { font-size: 11px; padding: 4px 10px; }
+
+          /* Title / description */
+          .rp-title { font-size: 2rem; margin-bottom: 14px; }
+          .rp-description { font-size: 16px; margin-bottom: 20px; }
+
+          /* Meta row */
+          .rp-meta-row { gap: 10px; margin-bottom: 20px; padding-bottom: 16px; }
+          .rp-meta-left { gap: 10px; }
+          .rp-author-avatar { width: 32px; height: 32px; }
+          .rp-author-name { font-size: 14px; }
+          .rp-pub-date { font-size: 12px; }
+          .rp-rating-text { font-size: 12px; }
+          .rp-actions { gap: 6px; }
+          .rp-action-btn { width: 34px; height: 34px; }
+
+          /* Hero */
+          .rp-hero-wrap { border-radius: 16px; margin-bottom: 20px; aspect-ratio: 16/10; }
+
+          /* Stats bar */
+          .rp-stats-bar { flex-direction: column; border-radius: 16px; }
+          .rp-stat-cell {
+            flex-basis: auto; padding: 16px 14px;
+            border-right: none; border-bottom: 1px solid #F0EBE3;
+            flex-direction: row; gap: 12px; justify-content: flex-start;
+          }
           .rp-stat-cell:last-child { border-bottom: none; }
-          .rp-gallery { grid-template-columns: 1fr; }
+          .rp-stat-icon { margin-bottom: 0; }
+          .rp-stat-label { font-size: 11px; }
+          .rp-stat-value { font-size: 17px; }
+          .rp-stat-extra { padding: 12px; }
+
+          /* Recipe card */
+          .rp-card { border-radius: 16px; margin-bottom: 28px; }
+          .rp-card-header { padding: 20px 16px 18px; }
+          .rp-card-header-inner { flex-direction: column; gap: 14px; }
+          .rp-card-eyebrow { font-size: 11px; }
+          .rp-card-title { font-size: 1.6rem; }
+          .rp-card-subtitle { font-size: 14px; }
+          .rp-card-meta { text-align: left; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+          .rp-card-meta dt { font-size: 12px; }
+          .rp-card-meta dd { font-size: 14px; }
+          .rp-card-body { padding: 18px 14px; }
+          .rp-card-section-title { font-size: 20px; gap: 10px; margin-bottom: 20px; }
+          .rp-card-section-num { width: 28px; height: 28px; font-size: 13px; }
+          .rp-servings-note { font-size: 13px; }
+
+          /* Ingredients */
+          .rp-ingredients-list { gap: 6px; }
+          .rp-ingredient-item {
+            font-size: 16px; padding: 12px 14px; gap: 12px;
+            border-radius: 12px;
+          }
+          .rp-check-icon { width: 18px; height: 18px; margin-top: 3px; }
+
+          /* Steps */
+          .rp-steps-list { gap: 16px; }
+          .rp-step-item { gap: 14px; padding: 16px 14px; border-radius: 14px; }
+          .rp-step-num { width: 34px; height: 34px; font-size: 14px; }
+          .rp-step-body { font-size: 16px; line-height: 1.65; }
+          .rp-step-img-wrap { max-width: 100%; }
+
+          /* Card footer */
+          .rp-card-footer { font-size: 13px; gap: 12px; }
+
+          /* Gallery */
+          .rp-gallery { grid-template-columns: 1fr; gap: 8px; }
+
+          /* Reviews */
+          .rp-reviews { margin-bottom: 32px; }
+          .rp-reviews-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+          .rp-section-title { font-size: 1.4rem; }
+          .rp-review-card { padding: 18px 16px; }
+          .rp-reviewer-name { font-size: 14px; }
+          .rp-review-comment { font-size: 15px; }
+          .rp-helpful-btn { font-size: 12px; padding: 5px 12px; }
+
+          /* Sidebar */
+          .rp-sidebar { gap: 16px; }
+          .rp-chef-card { padding: 16px; }
+          .rp-chef-avatar { width: 44px; height: 44px; }
+          .rp-chef-name { font-size: 15px; }
+          .rp-chef-bio { font-size: 13px; }
+          .rp-nutrition-card { padding: 14px 16px; }
+          .rp-nutrition-row { font-size: 14px; padding: 8px 0; }
+          .rp-tags-card { padding: 14px 16px; }
+          .rp-tag-link { font-size: 12px; padding: 5px 12px; }
+          .rp-page-nav { padding: 14px 16px; }
+
+          /* Sidebar Favs */
+          .rp-favs-grid { gap: 12px 10px; }
+          .rp-fav-card-title { font-size: 12px; }
+
+          /* Related */
+          .rp-related { margin-top: 36px; padding-top: 32px; }
+          .rp-related-header { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 16px; }
+          .rp-related-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+          .rp-related-title { font-size: 14px; }
+          .rp-related-info { padding: 12px 14px; }
+          .rp-related-rating { font-size: 12px; }
+
+          /* Footer */
+          .rp-footer { padding: 32px 14px; }
+          .rp-footer-inner { flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+          .rp-footer-links { flex-wrap: wrap; justify-content: center; gap: 14px; }
+          .rp-footer-brand { font-size: 14px; }
+          .rp-footer-copy { font-size: 12px; }
+          .rp-footer-link { font-size: 13px; }
+
+          /* CMS content */
+          .recipe-content { font-size: 17px; line-height: 1.75; margin-bottom: 36px; }
+          .recipe-content h2 { font-size: 1.5rem; padding-left: 14px; border-left-width: 4px; }
+          .recipe-content h3 { font-size: 1.2rem; }
+          .recipe-content ul li { font-size: 16px; gap: 10px; padding: 8px 0; }
+          .recipe-content ol li { font-size: 15px; gap: 10px; }
+          .recipe-content ol li::before { min-width: 26px; height: 26px; font-size: 11px; }
+          .recipe-content blockquote { padding: 12px 16px; font-size: 16px; }
+          .recipe-content table { font-size: 13px; }
+          .recipe-content table th,
+          .recipe-content table td { padding: 8px 10px; }
+
+          /* Tips */
+          .rp-tips-box { padding: 20px 16px; }
+          .rp-tip-item { font-size: 16px; gap: 10px; }
+          .rp-tip-icon { font-size: 18px; }
+
+          /* Storage */
+          .rp-storage-grid { grid-template-columns: 1fr; gap: 10px; }
+        }
+
+        /* Extra small phones */
+        @media (max-width: 380px) {
+          .rp-title { font-size: 1.65rem; }
+          .rp-card-title { font-size: 1.35rem; }
+          .rp-related-grid { grid-template-columns: 1fr; }
+          .rp-stat-cell { padding: 12px; }
+          .rp-ingredient-item { font-size: 15px; padding: 10px 12px; }
+          .rp-step-body { font-size: 15px; }
         }
 
         /* ── Reduced motion ── */

@@ -61,34 +61,36 @@ export default async function RecipesPage({
         <div className="min-h-screen bg-cream">
             <Navbar />
 
-            <main className="max-w-6xl mx-auto px-4 py-10">
-                <h1 className="font-display text-3xl font-bold text-gray-900 mb-6">All Recipes</h1>
+            <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+                <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">All Recipes</h1>
 
                 {/* Filters */}
-                <form className="flex flex-wrap gap-3 mb-8">
+                <form className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6 sm:mb-8">
                     <input name="q" defaultValue={sp.q} placeholder="Search recipes…"
-                        className="flex-1 min-w-[180px] px-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
-                    <select name="category" defaultValue={sp.category || ''}
-                        className="px-3 py-2 border border-gray-200 rounded-full text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
-                        <option value="">All Categories</option>
-                        {categories.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
-                    </select>
-                    <select name="difficulty" defaultValue={sp.difficulty || ''}
-                        className="px-3 py-2 border border-gray-200 rounded-full text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
-                        <option value="">Any Difficulty</option>
-                        <option value="EASY">Easy</option>
-                        <option value="MEDIUM">Medium</option>
-                        <option value="HARD">Hard</option>
-                    </select>
-                    <button type="submit"
-                        className="px-5 py-2 bg-brand-500 text-white rounded-full text-sm font-semibold hover:bg-brand-600 transition-colors">
-                        Filter
-                    </button>
+                        className="flex-1 min-w-0 sm:min-w-[180px] px-4 py-2.5 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                    <div className="flex gap-3 flex-wrap">
+                        <select name="category" defaultValue={sp.category || ''}
+                            className="flex-1 sm:flex-none px-3 py-2.5 border border-gray-200 rounded-full text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+                            <option value="">All Categories</option>
+                            {categories.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+                        </select>
+                        <select name="difficulty" defaultValue={sp.difficulty || ''}
+                            className="flex-1 sm:flex-none px-3 py-2.5 border border-gray-200 rounded-full text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+                            <option value="">Any Difficulty</option>
+                            <option value="EASY">Easy</option>
+                            <option value="MEDIUM">Medium</option>
+                            <option value="HARD">Hard</option>
+                        </select>
+                        <button type="submit"
+                            className="px-5 py-2.5 bg-brand-500 text-white rounded-full text-sm font-semibold hover:bg-brand-600 transition-colors">
+                            Filter
+                        </button>
+                    </div>
                 </form>
 
                 <p className="text-sm text-gray-400 mb-4">{total} recipes found</p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
                     {recipes.map((recipe) => {
                         const avgRating = recipe.feedback.length > 0
                             ? recipe.feedback.reduce((s, f) => s + f.rating, 0) / recipe.feedback.length
@@ -125,7 +127,7 @@ export default async function RecipesPage({
 
                 {/* Pagination */}
                 {pages > 1 && (
-                    <div className="flex justify-center gap-2 mt-10">
+                    <div className="flex justify-center gap-2 mt-8 sm:mt-10 flex-wrap">
                         {page > 1 && (
                             <Link href={`?page=${page - 1}`}
                                 className="px-4 py-2 border border-gray-200 rounded-full text-sm hover:bg-gray-50">← Prev</Link>

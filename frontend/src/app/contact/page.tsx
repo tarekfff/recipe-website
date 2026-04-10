@@ -18,18 +18,18 @@ export default async function ContactPage() {
     return (
         <div className="min-h-screen bg-[#FAF7F2] text-[#1C1917] flex flex-col">
             <Navbar />
-            <main className="max-w-4xl mx-auto px-6 py-20 flex-grow">
-                <h1 className="text-4xl md:text-5xl font-display font-bold text-[#1C1917] mb-4 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-20 flex-grow">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[#1C1917] mb-3 sm:mb-4 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
                     Contact Us
                 </h1>
-                <p className="text-center text-gray-500 mb-12 max-w-2xl mx-auto">
+                <p className="text-center text-gray-500 mb-8 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base">
                     Have a question, feedback, or need support with your chef profile? We'd love to hear from you.
                 </p>
                 
                 {settings?.contactText ? (
                     <div className="prose prose-lg max-w-none text-[#44403C]" dangerouslySetInnerHTML={{ __html: settings.contactText }} />
                 ) : (
-                    <div className="grid md:grid-cols-2 gap-12 bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+                    <div className="grid md:grid-cols-2 gap-8 sm:gap-12 bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-5 sm:p-8 shadow-sm">
                     
                         {/* Contact Info */}
                         <div className="space-y-8">

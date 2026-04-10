@@ -17,8 +17,8 @@ export default async function AboutPage() {
     return (
         <div className="min-h-screen bg-[#FAF7F2] text-[#1C1917] flex flex-col">
             <Navbar />
-            <main className="max-w-4xl mx-auto px-6 py-20 flex-grow">
-                <h1 className="text-4xl md:text-5xl font-display font-bold text-[#1C1917] mb-8 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-20 flex-grow">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[#1C1917] mb-6 sm:mb-8 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
                     About Us
                 </h1>
                 
@@ -30,7 +30,7 @@ export default async function AboutPage() {
                         Welcome to the Recipe Platform, where culinary passion meets global sharing.
                     </p>
                     
-                    <div className="bg-[#F0EBE3]/30 p-8 rounded-2xl mb-10 border border-[#E6D0CA]">
+                    <div className="bg-[#F0EBE3]/30 p-5 sm:p-8 rounded-xl sm:rounded-2xl mb-8 sm:mb-10 border border-[#E6D0CA]">
                         <h2 className="text-2xl font-bold text-[#1C1917] mb-4">Our Mission</h2>
                         <p>
                             We believe that cooking is more than just preparing food; it&apos;s an art, a science, and a way to bring people together. 
@@ -39,7 +39,7 @@ export default async function AboutPage() {
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-10 my-12">
+                    <div className="grid md:grid-cols-2 gap-6 sm:gap-10 my-8 sm:my-12">
                         <div>
                             <h3 className="text-xl font-bold text-[#1C1917] mb-3">For Creators</h3>
                             <p>
