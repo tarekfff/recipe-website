@@ -10,6 +10,7 @@ import {
   BookmarkPlus, Share2, ThumbsUp
 } from 'lucide-react'
 import RecipeFeedbackForm from '@/components/recipes/RecipeFeedbackForm'
+import RecipeActions from '@/components/recipes/RecipeActions'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -286,17 +287,7 @@ export default async function RecipePage({ params }: Props) {
               )}
             </div>
             {/* Quick action buttons */}
-            <div className="rp-actions">
-              <button className="rp-action-btn" aria-label="Print recipe" title="Print recipe" onClick={undefined}>
-                <Printer className="w-4 h-4" />
-              </button>
-              <button className="rp-action-btn" aria-label="Save recipe" title="Save recipe">
-                <BookmarkPlus className="w-4 h-4" />
-              </button>
-              <button className="rp-action-btn" aria-label="Share recipe" title="Share recipe">
-                <Share2 className="w-4 h-4" />
-              </button>
-            </div>
+            <RecipeActions recipeTitle={recipe.title} recipeSlug={recipe.slug} />
           </div>
 
           {/* ── HERO IMAGE ── */}
