@@ -299,7 +299,7 @@ export default async function RecipePage({ params }: Props) {
                 fill
                 className="rp-hero-img"
                 priority
-                sizes="(max-width: 768px) 100vw, 960px"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1140px"
               />
             </figure>
           )}
@@ -716,7 +716,7 @@ export default async function RecipePage({ params }: Props) {
           --shadow-lg:   0 8px 40px rgba(28,25,23,.10);
           --font-serif:  'Cormorant Garamond', Georgia, serif;
           --font-body:   'Poppins', system-ui, sans-serif;
-          --max-w:       1060px;
+          --max-w:       1140px;
         }
 
         /* ── Root ── */
@@ -903,13 +903,14 @@ export default async function RecipePage({ params }: Props) {
         .rp-hero-wrap {
           position: relative;
           width: 100%;
-          aspect-ratio: 16/8;
-          border-radius: var(--radius-xl);
+          aspect-ratio: 16/9;
+          border-radius: 20px;
           overflow: hidden;
-          margin: 0 0 32px;
-          box-shadow: var(--shadow-lg);
+          margin: 0 0 36px;
+          box-shadow: 0 8px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
         }
-        .rp-hero-img { object-fit: cover; }
+        .rp-hero-img { object-fit: cover; transition: transform 0.5s ease; }
+        .rp-hero-wrap:hover .rp-hero-img { transform: scale(1.02); }
 
         /* ── Stats bar ── */
         .rp-stats-bar {
@@ -973,8 +974,8 @@ export default async function RecipePage({ params }: Props) {
         /* ── Two-column layout ── */
         .rp-layout {
           display: grid;
-          grid-template-columns: 1fr 300px;
-          gap: 48px;
+          grid-template-columns: 1fr 280px;
+          gap: 44px;
           align-items: start;
         }
         @media (max-width: 880px) {
@@ -985,16 +986,23 @@ export default async function RecipePage({ params }: Props) {
         .rp-gallery {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
-          margin-bottom: 40px;
+          gap: 16px;
+          margin-bottom: 44px;
         }
         .rp-gallery-item {
           position: relative;
-          aspect-ratio: 1;
-          border-radius: var(--radius-md);
+          aspect-ratio: 4/3;
+          border-radius: 16px;
           overflow: hidden;
-          box-shadow: var(--shadow-sm);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          transition: transform 0.3s, box-shadow 0.3s;
         }
+        .rp-gallery-item:hover {
+          transform: scale(1.02);
+          box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        .rp-gallery-item img { transition: transform 0.5s ease; }
+        .rp-gallery-item:hover img { transform: scale(1.05); }
 
         /* ══════════════════════
            RECIPE CARD
@@ -1151,12 +1159,15 @@ export default async function RecipePage({ params }: Props) {
         .rp-step-body p { margin: 0; }
         .rp-step-img-wrap {
           position: relative;
-          margin-top: 12px;
-          border-radius: var(--radius-md);
+          margin-top: 16px;
+          border-radius: 16px;
           overflow: hidden;
           aspect-ratio: 16/9;
-          max-width: 480px;
+          max-width: 100%;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.08);
         }
+        .rp-step-img-wrap img { transition: transform 0.5s ease; }
+        .rp-step-img-wrap:hover img { transform: scale(1.03); }
         .rp-card-footer {
           display: flex; flex-wrap: wrap;
           align-items: center; gap: 20px;
@@ -1321,12 +1332,13 @@ export default async function RecipePage({ params }: Props) {
           margin-bottom: 16px;
         }
         .rp-chef-avatar {
-          width: 52px; height: 52px;
+          width: 60px; height: 60px;
           border-radius: 50%; overflow: hidden; flex-shrink: 0;
           background: #F0EBE3;
           display: flex; align-items: center; justify-content: center;
           color: #7A6E64;
-          border: 2px solid #EAE6DF;
+          border: 3px solid #EAE6DF;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         }
         .rp-chef-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .rp-chef-name {
@@ -1448,9 +1460,13 @@ export default async function RecipePage({ params }: Props) {
         .rp-fav-img-wrap {
           position: relative;
           width: 100%;
-          aspect-ratio: 1 / 1;
+          aspect-ratio: 3 / 4;
           overflow: hidden;
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.06);
         }
+        .rp-fav-img-wrap img { transition: transform 0.5s ease; }
+        .rp-fav-card:hover .rp-fav-img-wrap img { transform: scale(1.05); }
         .rp-fav-card-title {
           font-family: var(--font-body);
           font-size: 14px;
@@ -1523,18 +1539,18 @@ export default async function RecipePage({ params }: Props) {
         }
         .rp-related-img-wrap {
           position: relative;
-          aspect-ratio: 4/3;
+          aspect-ratio: 3/2;
           background: var(--cream-deep);
           overflow: hidden;
         }
-        .rp-related-img { transition: transform .5s; }
-        .rp-related-card:hover .rp-related-img { transform: scale(1.05); }
+        .rp-related-img { transition: transform .5s ease; }
+        .rp-related-card:hover .rp-related-img { transform: scale(1.06); }
         .rp-related-placeholder {
           width: 100%; height: 100%;
           display: flex; align-items: center; justify-content: center;
-          font-size: 2rem;
+          font-size: 2.5rem;
         }
-        .rp-related-info { padding: 16px 18px; }
+        .rp-related-info { padding: 18px 20px; }
         .rp-related-title {
           font-family: var(--font-body);
           font-size: 16px; font-weight: 700;
@@ -1663,11 +1679,16 @@ export default async function RecipePage({ params }: Props) {
         .recipe-content a:hover { color: var(--accent-hover); }
 
         .recipe-content img {
-          border-radius: var(--radius-xl);
-          width: 100%; height: auto;
-          margin: 2rem 0;
-          box-shadow: var(--shadow-lg);
+          border-radius: 20px;
+          width: calc(100% + 40px);
+          margin-left: -20px;
+          height: auto;
+          margin-top: 2rem;
+          margin-bottom: 2rem;
+          box-shadow: 0 8px 36px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05);
           display: block;
+          object-fit: cover;
+          max-height: 600px;
         }
 
         .recipe-content blockquote {
@@ -1848,6 +1869,7 @@ export default async function RecipePage({ params }: Props) {
           .recipe-content ul li { font-size: 16px; gap: 10px; padding: 8px 0; }
           .recipe-content ol li { font-size: 15px; gap: 10px; }
           .recipe-content ol li::before { min-width: 26px; height: 26px; font-size: 11px; }
+          .recipe-content img { width: 100%; margin-left: 0; border-radius: 14px; max-height: 400px; }
           .recipe-content blockquote { padding: 12px 16px; font-size: 16px; }
           .recipe-content table { font-size: 13px; }
           .recipe-content table th,
