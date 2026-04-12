@@ -13,12 +13,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const chef = await prisma.chef.findUnique({ where: { slug } })
     if (!chef) return { title: 'Chef Not Found' }
 
-    const siteUrl = process.env.DOMAIN_NAME || 'https://nour-gourmand.com'
+    let siteUrl = process.env.DOMAIN_NAME || 'https://nour-gourmand.com'
+    if (!siteUrl.startsWith('http')) siteUrl = `https://${siteUrl}`
+
     const title = `${chef.name} — Expert Recipes | NOIR GOURMAND`
     const description = chef.bio || `Explore the signature culinary creations of ${chef.name}.`
-    const imageUrl = chef.avatar ? (chef.avatar.startsWith('http') ? chef.avatar : `${siteUrl}${chef.avatar}`) : `${siteUrl}/logo.png`
+    const imageUrl = chef.avatar ? (chef.avatar.startsWith('http') ? chef.avatar : `${siteUrl}${chef.avatar.startsWith('/') ? '' : '/'}${chef.avatar}`) : `${siteUrl}/logo.png`
 
     return {
+        metadataBase: new URL(siteUrl),
         title,
         description,
         openGraph: {

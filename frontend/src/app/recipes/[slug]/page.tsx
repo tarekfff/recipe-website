@@ -29,12 +29,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const keywords = recipe.seo?.keywords || []
 
   // Absolute URLs are required for social sharing
-  const siteUrl = process.env.DOMAIN_NAME || 'https://nour-gourmand.com'
+  let siteUrl = process.env.DOMAIN_NAME || 'https://nour-gourmand.com'
+  if (!siteUrl.startsWith('http')) siteUrl = `https://${siteUrl}`
+  
   const imageUrl = recipe.featuredImage
-    ? (recipe.featuredImage.startsWith('http') ? recipe.featuredImage : `${siteUrl}${recipe.featuredImage}`)
+    ? (recipe.featuredImage.startsWith('http') ? recipe.featuredImage : `${siteUrl}${recipe.featuredImage.startsWith('/') ? '' : '/'}${recipe.featuredImage}`)
     : `${siteUrl}/logo.png`
 
   return {
+    metadataBase: new URL(siteUrl),
     title: {
       absolute: title,
     },

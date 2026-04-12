@@ -4,21 +4,22 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
+    metadataBase: new URL(process.env.DOMAIN_NAME && process.env.DOMAIN_NAME.startsWith('http') ? process.env.DOMAIN_NAME : `https://${process.env.DOMAIN_NAME || 'nour-gourmand.com'}`),
     title: 'NOIR GOURMAND — Premium Culinary Recipes',
     description: 'Explore a curated collection of world-class recipes, expert techniques, and culinary inspiration for the modern chef.',
     openGraph: {
         title: 'NOIR GOURMAND — Premium Recipes',
         description: 'World-class recipes and culinary techniques.',
-        url: process.env.DOMAIN_NAME || 'https://nour-gourmand.com',
+        url: process.env.DOMAIN_NAME && process.env.DOMAIN_NAME.startsWith('http') ? process.env.DOMAIN_NAME : `https://${process.env.DOMAIN_NAME || 'nour-gourmand.com'}`,
         siteName: 'NOIR GOURMAND',
-        images: [{ url: `${process.env.DOMAIN_NAME || 'https://nour-gourmand.com'}/logo.png`, width: 800, height: 600 }],
+        images: [{ url: '/logo.png', width: 800, height: 600 }],
         type: 'website',
     },
     twitter: {
         card: 'summary_large_image',
         title: 'NOIR GOURMAND — Premium Recipes',
         description: 'World-class recipes and culinary techniques.',
-        images: [`${process.env.DOMAIN_NAME || 'https://nour-gourmand.com'}/logo.png`],
+        images: ['/logo.png'],
     },
 }
 
