@@ -23,20 +23,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
   if (!recipe) return { title: 'Recipe Not Found' }
 
+  // Overrides from SEO table
   const title = recipe.seo?.metaTitle || recipe.title
-  const description = recipe.seo?.metaDescription || recipe.description
+  const description = recipe.seo?.metaDescription || recipe.description || ""
+  const keywords = recipe.seo?.keywords || []
+
+  // Absolute URLs are required for social sharing
+  const siteUrl = process.env.DOMAIN_NAME || 'https://nour-gourmand.com'
+  const imageUrl = recipe.featuredImage
+    ? (recipe.featuredImage.startsWith('http') ? recipe.featuredImage : `${siteUrl}${recipe.featuredImage}`)
+    : `${siteUrl}/logo.png`
 
   return {
-    title,
+    title: {
+      absolute: title,
+    },
     description,
-    keywords: recipe.seo?.keywords || [],
+    keywords,
     authors: recipe.chef ? [{ name: recipe.chef.name }] : [],
     openGraph: {
-      title: recipe.title,
+      title,
       description,
-      images: recipe.featuredImage
-        ? [{ url: recipe.featuredImage, width: 1200, height: 630, alt: recipe.title }]
-        : [],
+      images: [{
+        url: imageUrl,
+        width: 1200,
+        height: 630,
+        alt: title,
+      }],
+      url: `${siteUrl}/recipes/${recipe.slug}`,
+      siteName: 'NOIR GOURMAND',
       type: 'article',
       publishedTime: recipe.publishedAt?.toISOString(),
       authors: recipe.chef ? [recipe.chef.name] : [],
@@ -44,9 +59,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: recipe.title,
+      title,
       description,
-      images: recipe.featuredImage ? [recipe.featuredImage] : [],
+      images: [imageUrl],
     },
     robots: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' as const, 'max-video-preview': -1 },
   }

@@ -12,7 +12,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params
     const chef = await prisma.chef.findUnique({ where: { slug } })
     if (!chef) return { title: 'Chef Not Found' }
-    return { title: `${chef.name} — Recipes`, description: chef.bio || `Recipes by ${chef.name}` }
+
+    const siteUrl = process.env.DOMAIN_NAME || 'https://nour-gourmand.com'
+    const title = `${chef.name} — Expert Recipes | NOIR GOURMAND`
+    const description = chef.bio || `Explore the signature culinary creations of ${chef.name}.`
+    const imageUrl = chef.avatar ? (chef.avatar.startsWith('http') ? chef.avatar : `${siteUrl}${chef.avatar}`) : `${siteUrl}/logo.png`
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            url: `${siteUrl}/chefs/${slug}`,
+            images: [{ url: imageUrl, width: 800, height: 800, alt: chef.name }],
+            type: 'profile',
+        },
+        twitter: {
+            card: 'summary',
+            title,
+            description,
+            images: [imageUrl],
+        },
+    }
 }
 
 export default async function ChefProfilePage({ params }: Props) {

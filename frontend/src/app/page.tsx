@@ -1,6 +1,26 @@
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import Image from 'next/image'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+    title: 'NOIR GOURMAND — Premium Culinary Recipes',
+    description: 'Explore a curated collection of world-class recipes, expert techniques, and culinary inspiration for the modern chef.',
+    openGraph: {
+        title: 'NOIR GOURMAND — Premium Recipes',
+        description: 'World-class recipes and culinary techniques.',
+        url: process.env.DOMAIN_NAME || 'https://nour-gourmand.com',
+        siteName: 'NOIR GOURMAND',
+        images: [{ url: `${process.env.DOMAIN_NAME || 'https://nour-gourmand.com'}/logo.png`, width: 800, height: 600 }],
+        type: 'website',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'NOIR GOURMAND — Premium Recipes',
+        description: 'World-class recipes and culinary techniques.',
+        images: [`${process.env.DOMAIN_NAME || 'https://nour-gourmand.com'}/logo.png`],
+    },
+}
 
 import HomeHeader from '@/components/HomeHeader'
 import HeroSlider from '@/components/HeroSlider'

@@ -12,9 +12,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params
     const cat = await prisma.category.findUnique({ where: { slug } })
     if (!cat) return { title: 'Category Not Found' }
+
+    const siteUrl = process.env.DOMAIN_NAME || 'https://nour-gourmand.com'
+    const title = `${cat.name} Recipes — NOIR GOURMAND`
+    const description = cat.description || `Browse the best curated collection of ${cat.name} recipes.`
+    const imageUrl = cat.image ? (cat.image.startsWith('http') ? cat.image : `${siteUrl}${cat.image}`) : `${siteUrl}/logo.png`
+
     return {
-        title: `${cat.name} Recipes`,
-        description: cat.description || `Browse all ${cat.name} recipes.`,
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            url: `${siteUrl}/categories/${slug}`,
+            images: [{ url: imageUrl, width: 1200, height: 630, alt: cat.name }],
+            type: 'website',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [imageUrl],
+        },
     }
 }
 
