@@ -48,6 +48,7 @@ export default async function ChefsPage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-semibold text-gray-900 text-sm truncate">{chef.name}</p>
+                                    <p className="text-[10px] text-gray-400 font-mono truncate max-w-[120px]" title={chef.id}>ID: {chef.id}</p>
                                     <p className="text-xs text-gray-400 font-mono">{chef.slug}</p>
                                     <p className="text-xs text-gray-500 mt-1">{chef._count.recipes} recipes</p>
                                 </div>

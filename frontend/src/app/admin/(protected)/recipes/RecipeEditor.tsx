@@ -249,7 +249,10 @@ export default function RecipeEditor({ categories, chefs, recipe }: Props) {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Chef</label>
+                            <div className="flex items-center justify-between mb-1.5">
+                                <label className="block text-sm font-medium text-gray-700">Chef</label>
+                                <Link href="/admin/chefs" className="text-[10px] text-brand-600 hover:underline">Manage Chefs</Link>
+                            </div>
                             <select value={chefId} onChange={e => setChefId(e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
                                 <option value="">No chef</option>

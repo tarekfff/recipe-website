@@ -65,6 +65,7 @@ This is the primary endpoint for your automation tools. You can pass the core re
   "videoUrl": "https://youtube.com/...", // Optional
   
   "categoryId": "{{ $('category').first().json.category_id }}",
+  "chefId": "cuid_here", // Get Chef ID from Admin > Chefs
   "status": "PUBLISHED", 
   "tagNames": ["{{ $json.category }}", "{{ $json.cuisine }}", "Keyword1"], // Replaces WP Taxonomies
   

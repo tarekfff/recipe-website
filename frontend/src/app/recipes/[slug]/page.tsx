@@ -379,6 +379,27 @@ export default async function RecipePage({ params }: Props) {
                 </div>
               )}
 
+              {/* ── CHEF CARD (MAIN) ── */}
+              {recipe.chef && (
+                <div className="rp-chef-main">
+                  <div className="rp-chef-main-avatar">
+                    {recipe.chef.avatar
+                      ? <img src={recipe.chef.avatar} alt={recipe.chef.name} />
+                      : <div className="w-full h-full bg-[#f1efe9] flex items-center justify-center text-4xl">👨‍🍳</div>}
+                  </div>
+                  <div className="rp-chef-main-content">
+                    <p className="rp-chef-main-eyebrow">The Chef Behind the Dish</p>
+                    <h2 className="rp-chef-main-name">{recipe.chef.name}</h2>
+                    {recipe.chef.bio && (
+                      <p className="rp-chef-main-bio">{recipe.chef.bio}</p>
+                    )}
+                    <Link href={`/chefs/${recipe.chef.slug}`} className="rp-chef-main-btn">
+                      More Recipes by {recipe.chef.name.split(' ')[0]} →
+                    </Link>
+                  </div>
+                </div>
+              )}
+
               {/* ═══════════════════════════════════════
                                 RECIPE CARD  (WP Recipe Maker equiv.)
                             ═══════════════════════════════════════ */}
@@ -1408,6 +1429,47 @@ export default async function RecipePage({ params }: Props) {
         .rp-nutrition-row:last-child { border-bottom: none; }
         .rp-nutrition-row dt { color: #6B6058; font-weight: 500; }
         .rp-nutrition-row dd { margin: 0; color: #2D2727; font-weight: 600; }
+
+        /* Chef Main Card */
+        .rp-chef-main {
+          background: #fff;
+          border-radius: var(--radius-xl);
+          padding: 40px;
+          margin-bottom: 48px;
+          display: flex;
+          gap: 32px;
+          align-items: center;
+          border: 1px solid #EAE6DF;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+        @media (max-width: 640px) {
+          .rp-chef-main { flex-direction: column; text-align: center; padding: 30px 20px; gap: 20px; }
+        }
+        .rp-chef-main-avatar {
+          width: 120px; height: 120px;
+          border-radius: 50%; overflow: hidden; flex-shrink: 0;
+          border: 5px solid #F4EFE6;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+          background: #f1efe9;
+        }
+        .rp-chef-main-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .rp-chef-main-content { flex: 1; }
+        .rp-chef-main-eyebrow {
+          font-size: 13px; font-weight: 800; text-transform: uppercase; color: var(--accent);
+          letter-spacing: .1em; margin-bottom: 8px;
+        }
+        .rp-chef-main-name {
+          font-family: var(--font-serif); font-size: 2.2rem; font-weight: 800; color: #111;
+          margin: 0 0 12px;
+        }
+        .rp-chef-main-bio { font-size: 18px; color: #4A413B; line-height: 1.6; margin: 0 0 20px; }
+        .rp-chef-main-btn {
+          display: inline-flex; align-items: center; gap: 8px;
+          font-size: 15px; font-weight: 700; color: var(--accent);
+          text-decoration: none; padding: 10px 24px; border: 2px solid var(--accent);
+          border-radius: 99px; transition: all .25s ease;
+        }
+        .rp-chef-main-btn:hover { background: var(--accent); color: #fff; transform: translateY(-2px); }
 
         /* Tags card */
         .rp-tags-card {
