@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - traefik_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nextjs:
+    image: node:20
+    working_dir: /root
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
+      DATABASE_URL: postgresql://myuser:mypassword@postgres:5432/mydb
+      NEXTAUTH_URL: https://${DOMAIN_NAME}
+      NEXT_PUBLIC_APP_URL: https://${DOMAIN_NAME}
+      AUTH_SECRET: 8GZtvJw1fGZT+t3+xCzOeDQhkmf8I9s06To3iaCeT60=
+      SEED_ADMIN_EMAIL: admin@recipe.com
+      SEED_ADMIN_PASSWORD: Admin@123456
+    command: >
+      sh -c "
+        apt-get update -qq &&
+        apt-get install -y git --no-install-recommends &&
+        rm -rf /app &&
+        git clone https://github.com/tarekfff/recipe-website.git /app &&
+        cd /app/frontend &&
+        npm install --include=dev &&
+        npx prisma generate &&
+        npx prisma migrate deploy &&
+        npm run build &&
+        npm start
+      "
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${SITE_NAME}.rule=Host(`${DOMAIN_NAME}`)"
+      - "traefik.http.routers.${SITE_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.${SITE_NAME}.tls=true"
+      - "traefik.http.routers.${SITE_NAME}.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.${SITE_NAME}.loadbalancer.server.port=3000"
+      - "traefik.docker.network=n8n_default"
+    networks:
+      - traefik_net
+
+volumes:
+  pgdata:
+
+networks:
+  traefik_net:
+    external: true
+    name: n8n_default

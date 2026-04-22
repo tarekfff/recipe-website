@@ -1,0 +1,3798 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w",
+          "mode": "list",
+          "cachedResultName": "bulk websites ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $json['sheet name'] }}",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "state",
+              "lookupValue": "state"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        768
+      ],
+      "id": "c2ba67c3-9efd-421a-91ad-e61e054ce6bb",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5pGhYbBCZHu7oUrn",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "for a single recipe. All 4 images must appear as part of the same photoshoot: identical kitchen environment, props, colors, textures, angles, and decor. No background blur.  Requirements: \nInput: one recipe name.  \nOutput: valid JSON with 4 single-line \nprompts:  \n•⁠  ⁠image_1_feature  \n•⁠  ⁠image_2_ingredients  \n•⁠  ⁠image_3_cooking  \n•⁠  ⁠image_4_final_presentation\nEach prompt must be one continuous descriptive line without special characters or quotation marks inside the text.  \nnever include aspect ratio.  \nBackground must stay detailed and realistic.  \nScene continuity is mandatory.\nthe food must be zoomed in to the max of 90% from the image size\n1.⁠ ⁠Feature Image\nA polished, cinematic hero shot that represents the overall identity of the recipe.\nClean, well-lit, high-end food photography style that highlights the dish concept\nNo preparation scenes, no plating interactions No hands, no humans, no arms, no reflections of people\n2.⁠ ⁠Ingredients Image\nA neatly arranged top-down or 45° scene showing all recipe ingredients in one shot.\nIngredients placed in elegant styled way\nProps are minimal, clean, and consistent with the recipe theme\nCrisp details and natural shadows\nAbsolutely no hands, no humans, no utensils being held, no human presence of any kind\n3.⁠ ⁠Cooking Image\nA shot of the cooking stage.\nFocus on the food, cookware, and textures\nSame lighting, environment, and props as other images for aesthetic consistency\nthe cooking must follow the recipe if its uses hot fier or not for ex icecream do not need to be cooked on hot fire...ect \n4.⁠ ⁠Final Presentation Image\nA beautifully styled, professionally plated finished dish.\nRestaurant-quality composition\nConsistent props, tableware, and lighting with previous images\nMust look appetizing and clean, matching brand visual identity",
+              "role": "model"
+            },
+            {
+              "content": "=Generate the JSON for the recipe: {{ $('Get row(s) in sheet').item.json['SPY Title'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        528
+      ],
+      "id": "8bb20280-7882-405c-a6e8-94ea72d5dde1",
+      "name": "Message a model",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ertPG9dPp46CyI9u",
+          "name": "pro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the raw text\nlet rawText = $input.first().json.content.parts[0].text;\n\n// 2. Clean the Markdown wrappers\nconst cleanJson = rawText.replace(/```json|```/g, \"\").trim();\n\ntry {\n  const response = JSON.parse(cleanJson);\n\n  // 3. Return a single object containing all prompts\n  return [\n    { \n      json: { \n        feature: response.image_1_feature,\n        ingredients: response.image_2_ingredients,\n        cooking: response.image_3_cooking,\n        final: response.image_4_final_presentation\n      } \n    }\n  ];\n} catch (error) {\n  return [{ json: { error: \"Failed to parse JSON\", raw: rawText } }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2592,
+        528
+      ],
+      "id": "da9dfcdc-783b-4c89-bb4b-0eeb7ea2669b",
+      "name": "get json code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1cf173ee-c056-4de2-929c-11ff0e0875b6",
+              "name": "SPY PIN Image",
+              "value": "={{ $('Get row(s) in sheet').item.json['SPY PIN Image'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2816,
+        528
+      ],
+      "id": "e1d75488-e5d2-41cb-9a68-56193a64721a",
+      "name": "spy image1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Read the binary file from n8n's disk into memory. \n// Note: 'data' is the name of your binary channel from the HTTP request.\nconst imageBuffer = await this.helpers.getBinaryDataBuffer(0, 'data');\n\n// 2. Convert that raw buffer into a Base64 text string\nconst base64String = imageBuffer.toString('base64');\n\n// 3. Get the mime type (image type) directly from the binary data properties\nconst imageType = $input.first().binary.data.mimeType;\n\n// 4. Attach both the Base64 string and the image type to our JSON output\nreturn [{\n  json: {\n    ...$input.first().json,\n    base64_image: base64String,\n    mime_type: imageType\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3520,
+        528
+      ],
+      "id": "9dc7f8ea-ed2b-464c-8211-eda35436d645",
+      "name": "base 64 image1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['SPY PIN Image'] }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3040,
+        528
+      ],
+      "id": "a9f64863-60cb-4bcc-8155-3549a77568b5",
+      "name": "install image1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop through all incoming items\nconst results = $input.all().map(item => {\n  // 1. Get the 'parts' array from the Gemini response\n  const parts = item.json.candidates?.[0]?.content?.parts || [];\n\n  // 2. SEARCH for the part that contains 'inlineData' (The Image)\n  // This ignores any parts that only contain 'text'\n  const imagePart = parts.find(part => part.inlineData);\n\n  if (imagePart) {\n    // 3. If we found an image, return just the clean data\n    return {\n      json: {\n        success: true,\n        mime_type: imagePart.inlineData.mimeType,\n        base64_image: imagePart.inlineData.data,\n        // Keep the original prompt text if you need it for the filename later\n        original_prompt: item.json.promp || \"image\" \n      }\n    };\n  } else {\n    // Handle cases where Gemini refused to generate an image\n    return {\n      json: {\n        success: false,\n        error: \"No image found in Gemini response\",\n        raw_response: item.json\n      }\n    };\n  }\n});\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4192,
+        -176
+      ],
+      "id": "ef38eefc-b3bb-4215-893d-a8a5b9697253",
+      "name": "get the real image"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ $('website').first().json.gemini }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"{{ $json['prompt Feature Image'] }}\"\n        },\n        {\n          \"inlineData\": {\n            \"mimeType\": \"{{ $json.mime_type }}\",\n            \"data\": \"{{ $json.base64_image }}\"\n          }\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.3,\n    \"maxOutputTokens\": 4096\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4016,
+        -176
+      ],
+      "id": "676f16cc-645f-447c-aade-7eb6ea5dad8f",
+      "name": "generate feutured image"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop through all incoming items\nconst results = $input.all().map(item => {\n  // 1. Get the 'parts' array from the Gemini response\n  const parts = item.json.candidates?.[0]?.content?.parts || [];\n\n  // 2. SEARCH for the part that contains 'inlineData' (The Image)\n  // This ignores any parts that only contain 'text'\n  const imagePart = parts.find(part => part.inlineData);\n\n  if (imagePart) {\n    // 3. If we found an image, return just the clean data\n    return {\n      json: {\n        success: true,\n        mime_type: imagePart.inlineData.mimeType,\n        base64_image: imagePart.inlineData.data,\n        // Keep the original prompt text if you need it for the filename later\n        original_prompt: item.json.promp || \"image\" \n      }\n    };\n  } else {\n    // Handle cases where Gemini refused to generate an image\n    return {\n      json: {\n        success: false,\n        error: \"No image found in Gemini response\",\n        raw_response: item.json\n      }\n    };\n  }\n});\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4272,
+        208
+      ],
+      "id": "1049f140-2f24-40c6-ae38-da10ee169f20",
+      "name": "get the real image1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb9ec657-72b5-4e6b-82f2-02a2165996b5",
+              "name": "data",
+              "value": "data",
+              "type": "binary"
+            },
+            {
+              "id": "4445bfca-1607-4c3e-bda4-e9f78dfc5259",
+              "name": "prompt Feature Image",
+              "value": "=Create a high-quality, realistic 9:16 food process image as follow {{ $('get json code').item.json.feature }} At the bottom center, include the watermark: www.{{ $('website').item.json.link.replace(\"https://\", \"\").replace(\"http://\", \"\")  }} # Context • Input reference images may include multiple food photos within a collage or grid layout, Text overlays, logos, and design frames, The final output must be a single recipe presentation Ignore any text, frames, watermarks, logos, or templates. • If the image depicted to multiple dish image ignore the duplicated and Generate a single photo showing only one dish",
+              "type": "string"
+            },
+            {
+              "id": "3fe08ad6-3b77-4737-8146-f45fc83a96d2",
+              "name": "prompt Ingredients Image",
+              "value": "=ROLE Generate a professional, realistic 9:16 ingredient showcase image for a recipe blog. Ingredient description: {{ $('get json code').item.json.ingredients }} At the bottom center, include the watermark: www.{{ $('website').item.json.link.replace(\"https://\", \"\").replace(\"http://\", \"\")  }}   # Context •⁠  ⁠Input reference  images may include multiple food photos within a collage or grid layout,Text overlays, logos, and design frames, The final output must be a single recipe presentation Ignore any text, frames, watermarks, logos, or templates.  •⁠  ⁠If the image dplited to multiple dish image egnor the doubclicated and Generate a single photo showing only one dish.",
+              "type": "string"
+            },
+            {
+              "id": "f6fd481b-dc77-440b-b000-db4e607d2a7f",
+              "name": "prompt Cooking Image",
+              "value": "=Create a high-quality, realistic 9:16 food process image  as folow \nCooking step description: {{ $('get json code').item.json.cooking }}\nAt the bottom center, include the watermark:\nwww.{{ $('website').item.json.link.replace(\"https://\", \"\").replace(\"http://\", \"\")  }}\n\n# Context\n•⁠  ⁠Input reference  images may include multiple food photos within a collage or grid layout,Text overlays, logos, and design frames, The final output must be a single recipe presentation Ignore any text, frames, watermarks, logos, or templates. \n•⁠  ⁠If the image dplited to multiple dish image egnor the doubclicated and Generate a single photo showing only one dish.",
+              "type": "string"
+            },
+            {
+              "id": "d082e10b-4b68-4450-8014-3cd7659810a8",
+              "name": "prompt Final Presentation Image",
+              "value": "=Generate a professional, realistic 9:16 final-dish presentation image for a recipe blog.\nFinal presentation description: {{ $('get json code').item.json.final }}\nAt the bottom center, include the watermark:\nwww.{{ $('website').item.json.link.replace(\"https://\", \"\").replace(\"http://\", \"\")  }}\n\n# Context\n•⁠  ⁠Input reference  images may include multiple food photos within a collage or grid layout,Text overlays, logos, and design frames, The final output must be a single recipe presentation Ignore any text, frames, watermarks, logos, or templates. \n•⁠  ⁠If the image dplited to multiple dish image egnor the doubclicated and Generate a single photo showing only one dish.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3264,
+        528
+      ],
+      "id": "eb5e293e-2dab-4ad7-bb70-039373afb265",
+      "name": "promps"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ $('website').first().json.gemini }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"{{ $json['prompt Ingredients Image'] }}\"\n        },\n        {\n          \"inlineData\": {\n            \"mimeType\": \"{{ $json.mime_type }}\",\n            \"data\": \"{{ $json.base64_image }}\"\n          }\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"responseModalities\": [\"IMAGE\"],\n    \"temperature\": 0.3\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4048,
+        208
+      ],
+      "id": "e43838f7-3148-43be-ad17-41a42470f2c8",
+      "name": "generate the image"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop through all incoming items\nconst results = $input.all().map(item => {\n  // 1. Get the 'parts' array from the Gemini response\n  const parts = item.json.candidates?.[0]?.content?.parts || [];\n\n  // 2. SEARCH for the part that contains 'inlineData' (The Image)\n  // This ignores any parts that only contain 'text'\n  const imagePart = parts.find(part => part.inlineData);\n\n  if (imagePart) {\n    // 3. If we found an image, return just the clean data\n    return {\n      json: {\n        success: true,\n        mime_type: imagePart.inlineData.mimeType,\n        base64_image: imagePart.inlineData.data,\n        // Keep the original prompt text if you need it for the filename later\n        original_prompt: item.json.promp || \"image\" \n      }\n    };\n  } else {\n    // Handle cases where Gemini refused to generate an image\n    return {\n      json: {\n        success: false,\n        error: \"No image found in Gemini response\",\n        raw_response: item.json\n      }\n    };\n  }\n});\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4432,
+        672
+      ],
+      "id": "20b2e3a5-3273-42d1-b21a-9bef45360243",
+      "name": "get the real image2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ $('website').first().json.gemini }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  \"contents\": [{\n    \"parts\": [\n      { \"text\": $json[\"prompt Cooking Image\"] },\n      { \"inlineData\": {\n          \"mimeType\": $json.mime_type,\n          \"data\": $json.base64_image\n        }\n      }\n    ]\n  }],\n  \"generationConfig\": {\n    \"responseModalities\": [\"IMAGE\"],\n    \"temperature\": 0.3\n  }\n}) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4208,
+        672
+      ],
+      "id": "04953424-1a92-4e54-989a-e7b64433e325",
+      "name": "generate the image1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop through all incoming items\nconst results = $input.all().map(item => {\n  // 1. Get the 'parts' array from the Gemini response\n  const parts = item.json.candidates?.[0]?.content?.parts || [];\n\n  // 2. SEARCH for the part that contains 'inlineData' (The Image)\n  // This ignores any parts that only contain 'text'\n  const imagePart = parts.find(part => part.inlineData);\n\n  if (imagePart) {\n    // 3. If we found an image, return just the clean data\n    return {\n      json: {\n        success: true,\n        mime_type: imagePart.inlineData.mimeType,\n        base64_image: imagePart.inlineData.data,\n        // Keep the original prompt text if you need it for the filename later\n        original_prompt: item.json.promp || \"image\" \n      }\n    };\n  } else {\n    // Handle cases where Gemini refused to generate an image\n    return {\n      json: {\n        success: false,\n        error: \"No image found in Gemini response\",\n        raw_response: item.json\n      }\n    };\n  }\n});\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4256,
+        1392
+      ],
+      "id": "e5695ad8-8ffc-4cd2-b964-322d062c01c4",
+      "name": "get the real image3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ $('website').first().json.gemini }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  \"contents\": [{\n    \"parts\": [\n      { \"text\": $json['prompt Final Presentation Image'] },\n      { \"inlineData\": {\n          \"mimeType\": $json.mime_type,\n          \"data\": $json.base64_image\n        }\n      }\n    ]\n  }],\n  \"generationConfig\": {\n    \"responseModalities\": [\"IMAGE\"],\n    \"temperature\": 0.3\n  }\n}) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4032,
+        1392
+      ],
+      "id": "7bc80ecd-f731-4755-b41c-00fb9b441e94",
+      "name": "generate the image2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const keys = ['feature', 'ingredients', 'cooking', 'final'];\nconst mergedData = {};\nconst items = $input.all();\n\n// Fill whatever images exist\nitems.forEach((item, index) => {\n  const keyName = keys[index] || `image_${index + 1}`;\n  const data = item.json;\n  mergedData[keyName] = {\n    ...data,\n    url: data.url || data?.guid?.rendered || \"\"\n  };\n});\n\n// ✅ Default any missing image slots to empty string\nkeys.forEach(key => {\n  if (!mergedData[key]) {\n    mergedData[key] = { url: \"\" };\n  }\n});\n\nreturn [{ json: mergedData }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7328,
+        288
+      ],
+      "id": "6e9d34d8-4611-4e24-994e-0b253d0e3fcd",
+      "name": "all picture"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.convertio.co/convert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"apikey\": \"{{ $('website').item.json.webp }}\",\n  \"input\": \"base64\",\n  \"file\": \"{{ $json.base64_image }}\",\n  \"filename\": \"image1\",\n  \"outputformat\": \"webp\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4480,
+        -176
+      ],
+      "id": "f557eca4-e74c-4fbb-ba6e-0cbac1ec807a",
+      "name": "Convert to WebP",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5104,
+        -192
+      ],
+      "id": "ba34dfff-51a9-4835-ba80-4f207c054cbf",
+      "name": "Wait Convert",
+      "webhookId": "24aa6d9b-4861-45a6-bce6-47576bd02743"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.convertio.co/convert/{{ $json.data.id }}/status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5328,
+        -256
+      ],
+      "id": "df03c97a-68d4-4f54-8df2-09f136e38bda",
+      "name": "Check Convert",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.data.step }}",
+              "rightValue": "finish",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "7df01d43-0420-41a9-a9b0-ca1bdc3d0c6e"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5552,
+        -192
+      ],
+      "id": "0491b964-0d6f-40cf-bd99-039d3b2f67f6",
+      "name": "Convert Done?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.convertio.co/convert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"apikey\": \"{{ $('website').item.json.webp }}\",\n  \"input\": \"base64\",\n  \"file\": \"{{ $json.base64_image }}\",\n  \"filename\": \"image2\",\n  \"outputformat\": \"webp\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4496,
+        208
+      ],
+      "id": "8bbb4f83-a435-4ed2-956f-b80dcfd36df6",
+      "name": "Convert to WebP1",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5120,
+        256
+      ],
+      "id": "156626aa-61dc-4981-b7c7-8ab2b3b9c554",
+      "name": "Wait Convert1",
+      "webhookId": "ec1cf34a-0a3d-4fa6-8b41-04572edbe1aa"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.convertio.co/convert/{{ $json.data.id }}/status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5344,
+        176
+      ],
+      "id": "aec92d43-1378-4fe1-a6b0-57f2e3a9e627",
+      "name": "Check Convert1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.data.step }}",
+              "rightValue": "finish",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "7df01d43-0420-41a9-a9b0-ca1bdc3d0c6e"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5568,
+        256
+      ],
+      "id": "1516cb06-83fe-4fd2-8694-69a50f013ec3",
+      "name": "Convert Done?1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.convertio.co/convert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"apikey\": \"{{ $('website').item.json.webp }}\",\n  \"input\": \"base64\",\n  \"file\": \"{{ $json.base64_image }}\",\n  \"filename\": \"image3\",\n  \"outputformat\": \"webp\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4656,
+        672
+      ],
+      "id": "f80fbc48-2e19-42c4-bd8c-7076b42c77d3",
+      "name": "Convert to WebP2",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5168,
+        656
+      ],
+      "id": "c0a8d348-5a39-4f21-be13-95c0e98e07b4",
+      "name": "Wait Convert2",
+      "webhookId": "d7e4b9a1-7a78-48c9-8b2d-289ab595cccd"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.convertio.co/convert/{{ $json.data.id }}/status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5408,
+        608
+      ],
+      "id": "2cb16eb1-71af-4b57-83dd-e00078f2833a",
+      "name": "Check Convert2",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.data.step }}",
+              "rightValue": "finish",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "7df01d43-0420-41a9-a9b0-ca1bdc3d0c6e"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5616,
+        656
+      ],
+      "id": "59093460-3720-4eb1-9954-31544e6e64ca",
+      "name": "Convert Done?2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.convertio.co/convert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"apikey\": \"{{ $('website').item.json.webp }}\",\n  \"input\": \"base64\",\n  \"file\": \"{{ $json.base64_image }}\",\n  \"filename\": \"image4\",\n  \"outputformat\": \"webp\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4480,
+        1392
+      ],
+      "id": "3e6ff448-c7bf-445f-b55d-51883b01b3f3",
+      "name": "Convert to WebP3",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5120,
+        1392
+      ],
+      "id": "62320ba4-1dde-4e55-8e09-0e4cd871f26d",
+      "name": "Wait Convert3",
+      "webhookId": "c143ebf3-77a1-4359-87f2-69e9461cdfef"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.convertio.co/convert/{{ $json.data.id }}/status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5360,
+        1120
+      ],
+      "id": "16cb9236-43a0-4be1-9cce-2ac4de780fb4",
+      "name": "Check Convert3",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.data.step }}",
+              "rightValue": "finish",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "7df01d43-0420-41a9-a9b0-ca1bdc3d0c6e"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5568,
+        1392
+      ],
+      "id": "f6cee25b-c8a1-4695-a425-a7d6709bfb21",
+      "name": "Convert Done?3"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        7104,
+        256
+      ],
+      "id": "1626feb8-bcc2-406d-8b33-07b45c4a1e28",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.output.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5920,
+        -208
+      ],
+      "id": "acd1a691-ed0e-43e1-9ea3-76cfb84264c7",
+      "name": "Download WebP Image"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('website').first().json.link }}/api/wp-json/wp/v2/categories",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        7552,
+        288
+      ],
+      "id": "c0a864e8-8c5c-449c-80f7-11fc52cb5a6c",
+      "name": "get category",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "yXtfZULv4dtwsObe",
+          "name": "wordpress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        9088,
+        448
+      ],
+      "id": "b02eb981-245e-4411-a937-2d837e0401f1",
+      "name": "Wait Processing V2",
+      "webhookId": "3dda2c59-cea1-4d90-af68-4910b225a26c"
+    },
+    {
+      "parameters": {
+        "jsCode": "const categories = $input.all();\n\nconst categoriesText = categories.map(cat => {\n  return `- ${cat.json.name} (ID: ${cat.json.real_cuid})`;\n}).join('\\n');\n\nreturn [{\n  json: {\n    categories_text: categoriesText,\n    total_categories: categories.length,\n    categories_list: categories.map(c => ({\n      id: c.json.real_cuid,   // ✅ Use real_cuid, NOT id\n      name: c.json.name,\n      slug: c.json.slug || \"\"\n    }))\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7776,
+        288
+      ],
+      "id": "b3237c25-e2a6-46a0-adf2-ed3cd22d4b3e",
+      "name": "category"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLE:\nYou are a Metadata Extraction Specialist. Your job is to extract structured recipe data purely from the blog content provided.\n\nINPUT SOURCE:\n- Blog Content: {{ $json.output.article_html }}\n\nTASK:\nAnalyze the HTML content to extract ingredients, instructions, and metadata.\nSince you do not have separate data fields, you must READ the blog text to find or calculate these values.\n\nCRITICAL EXTRACTION RULES:\n1. **Nutrition (Calories/Macros):** If not explicitly stated in the text, you must ESTIMATE realistic values based on the ingredients list.\n2. **Timings (Prep/Cook):** If not stated, ESTIMATE realistic times based on the instructions provided.\n3. **Instructions:** Convert the HTML instructions into a clean list with step numbers.\n4. **Format:** Return raw JSON only (No Markdown blocks).\n\nOUTPUT JSON FORMAT:\n{\n  \"recipe_title\": \"Extract the title from the blog\",\n  \"summary\": \"Extract or generate a 2-sentence summary\",\n  \"ingredients\": [ \"1 cup flour\", \"2 eggs\" ],\n  \"instructions\": [\n    { \"stepNumber\": 1, \"text\": \"Mix the ingredients...\" },\n    { \"stepNumber\": 2, \"text\": \"Bake for 20 mins...\" }\n  ],\n  \"prep_time_minutes\": 15,\n  \"cook_time_minutes\": 30,\n  \"total_time_minutes\": 45,\n  \"servings_number\": \"4\",\n  \"calories_number\": 350,\n  \"protein\": \"12g\",\n  \"carbs\": \"45g\",\n  \"fat\": \"15g\",\n  \"category\": \"(e.g. Dinner, Dessert)\",\n  \"cuisine\": \"(e.g. Italian, American)\",\n  \"keywords\": [\"keyword1\", \"keyword2\"],\n  \"equipment\": [\"List tools mentioned (e.g. Skillet, Oven)\"],\n  \"notes\": \"Any chef tips found in the text\"\n}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Extract accurately. Return ONLY JSON.\n{\n  \"recipe_title\": \"Extract the title from the blog\",\n  \"summary\": \"Extract or generate a 2-sentence summary\",\n  \"ingredients\": [ \"1 cup flour\", \"2 eggs\" ],\n  \"instructions\": [\n    { \"stepNumber\": 1, \"text\": \"Mix the ingredients...\" },\n    { \"stepNumber\": 2, \"text\": \"Bake for 20 mins...\" }\n  ],\n  \"prep_time_minutes\": 15,\n  \"cook_time_minutes\": 30,\n  \"total_time_minutes\": 45,\n  \"servings_number\": \"4\",\n  \"calories_number\": 350,\n  \"protein\": \"12g\",\n  \"carbs\": \"45g\",\n  \"fat\": \"15g\",\n  \"category\": \"(e.g. Dinner, Dessert)\",\n  \"cuisine\": \"(e.g. Italian, American)\",\n  \"keywords\": [\"keyword1\", \"keyword2\"],\n  \"equipment\": [\"List tools mentioned (e.g. Skillet, Oven)\"],\n  \"notes\": \"Any chef tips found in the text\"\n}{\n  \"recipe_title\": \"Extract the title from the blog\",\n  \"summary\": \"Extract or generate a 2-sentence summary\",\n  \"ingredients\": [ \"1 cup flour\", \"2 eggs\" ],\n  \"instructions\": [\n    { \"stepNumber\": 1, \"text\": \"Mix the ingredients...\" },\n    { \"stepNumber\": 2, \"text\": \"Bake for 20 mins...\" }\n  ],\n  \"prep_time_minutes\": 15,\n  \"cook_time_minutes\": 30,\n  \"total_time_minutes\": 45,\n  \"servings_number\": \"4\",\n  \"calories_number\": 350,\n  \"protein\": \"12g\",\n  \"carbs\": \"45g\",\n  \"fat\": \"15g\",\n  \"category\": \"(e.g. Dinner, Dessert)\",\n  \"cuisine\": \"(e.g. Italian, American)\",\n  \"keywords\": [\"keyword1\", \"keyword2\"],\n  \"equipment\": [\"List tools mentioned (e.g. Skillet, Oven)\"],\n  \"notes\": \"Any chef tips found in the text\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        9328,
+        448
+      ],
+      "id": "0ef603e2-1ea4-402a-9945-8e2ab9ba982a",
+      "name": "AI Data Extractor1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"recipe_title\": \"Extract the title from the blog\",\n  \"summary\": \"Extract or generate a 2-sentence summary\",\n  \"ingredients\": [ \"1 cup flour\", \"2 eggs\" ],\n  \"instructions\": [\n    { \"stepNumber\": 1, \"text\": \"Mix the ingredients...\" },\n    { \"stepNumber\": 2, \"text\": \"Bake for 20 mins...\" }\n  ],\n  \"prep_time_minutes\": 15,\n  \"cook_time_minutes\": 30,\n  \"total_time_minutes\": 45,\n  \"servings_number\": \"4\",\n  \"calories_number\": 350,\n  \"protein\": \"12g\",\n  \"carbs\": \"45g\",\n  \"fat\": \"15g\",\n  \"category\": \"(e.g. Dinner, Dessert)\",\n  \"cuisine\": \"(e.g. Italian, American)\",\n  \"keywords\": [\"keyword1\", \"keyword2\"],\n  \"equipment\": [\"List tools mentioned (e.g. Skillet, Oven)\"],\n  \"notes\": \"Any chef tips found in the text\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        9472,
+        688
+      ],
+      "id": "e4e6ad5a-7380-43d4-badc-d3d923063bf7",
+      "name": "Parser Extract1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const blog = $('AI Blog Generator V2').first().json.output;\nconst extracted = $('AI Data Extractor1').first().json.output;\nconst picture = $('all picture').first().json;\nconst categoriesList = $('category').first().json.categories_list || [];\n\n// ✅ Match AI category name to a real DB ID — never trust the AI-generated ID\nconst matchedCategory = categoriesList.find(cat =>\n  cat.name.toLowerCase().includes(extracted.category.toLowerCase()) ||\n  extracted.category.toLowerCase().includes(cat.name.toLowerCase())\n);\n\n// Fallback to first category if nothing matches\nconst resolvedCategoryId = matchedCategory?.id || categoriesList[0]?.id || \"\";\n\nreturn {\n  json: {\n    title: blog.title,\n    description: blog.meta_description,\n    content: blog.article_html,\n    featuredImage: picture.feature?.guid?.rendered || picture.feature?.url || \"\",\n    categoryId: resolvedCategoryId,   // ✅ Always a real DB ID\n    status: \"PUBLISHED\",\n    tagNames: extracted.keywords || [],\n    difficulty: \"EASY\",\n    prepTime: parseInt(extracted.prep_time_minutes) || 0,\n    cookTime: parseInt(extracted.cook_time_minutes) || 0,\n    totalTime: parseInt(extracted.total_time_minutes) || 0,\n    servings: parseInt(extracted.servings_number) || 4,\n    calories: extracted.calories_number || 0,\n    ingredients: extracted.ingredients.map(ing => ({\n      amount: \"\",\n      unit: \"\",\n      name: ing\n    })),\n    instructions: extracted.instructions.map(step => ({\n      step: step.stepNumber,\n      text: step.text\n    })),\n    notes: extracted.notes || \"\",\n    nutrition: {\n      protein: extracted.protein || \"\",\n      carbs: extracted.carbs || \"\",\n      fat: extracted.fat || \"\"\n    },\n    seo: {\n      metaTitle: blog.title,\n      metaDescription: blog.meta_description,\n      focusKeyword: blog.focus_keyword,\n      keywords: extracted.keywords || [],\n      schemaEnabled: true\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9744,
+        448
+      ],
+      "id": "c302e813-1f63-40ac-afcc-669991b1d97b",
+      "name": "Prepare Recipe Card"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w",
+          "mode": "list",
+          "cachedResultName": "bulk websites ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('website').first().json['sheet name'] }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get row(s) in sheet').first().json.row_number }}",
+            "state": "pintrest",
+            "image generated": "={{ $('website').first().json.link }}{{ $('all picture').first().json.feature.url }}",
+            "image generated 2": "={{ $('website').first().json.link }}{{ $('all picture').first().json.ingredients.url }}",
+            "image generated 3": "={{ $('website').first().json.link }}{{ $('all picture').first().json.cooking.url }}",
+            "image generated 4": "={{ $('website').first().json.link }}{{ $('all picture').first().json.final.url }}",
+            "link generated": "={{ $('website').first().json.link }}/recipes/{{ $json.data.slug }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "SPY Title",
+              "displayName": "SPY Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Anotation",
+              "displayName": "Anotation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SPY PIN Image",
+              "displayName": "SPY PIN Image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "link generated",
+              "displayName": "link generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "image generated",
+              "displayName": "image generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image generated 2",
+              "displayName": "image generated 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image generated 3",
+              "displayName": "image generated 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image generated 4",
+              "displayName": "image generated 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        10544,
+        448
+      ],
+      "id": "37775171-a056-404c-8581-e6fcbadae402",
+      "name": "Update Sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5pGhYbBCZHu7oUrn",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "588218ca-40c0-482e-832b-5b64a158c101",
+              "name": "link",
+              "value": "=https://{{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "4adda0db-852c-4401-9b46-d20f0c5a14ad",
+              "name": "password",
+              "value": "={{ $json.password }}",
+              "type": "string"
+            },
+            {
+              "id": "8bab04bd-4c6d-42d0-830c-7b8c441e72ed",
+              "name": "webp",
+              "value": "={{ $json.webp }}",
+              "type": "string"
+            },
+            {
+              "id": "3e4dc709-9c79-4acf-bed3-8c8e53975027",
+              "name": "sheet name",
+              "value": "={{ $prevNode.name }}",
+              "type": "string"
+            },
+            {
+              "id": "0ad2ef57-cc4b-415a-9859-888fc7292ef9",
+              "name": "olama",
+              "value": "={{ $json.olama }}",
+              "type": "string"
+            },
+            {
+              "id": "e065eafc-f344-4f26-92bd-af98455f2565",
+              "name": "make",
+              "value": "={{ $json.make }}",
+              "type": "string"
+            },
+            {
+              "id": "f9b3cd3e-a8f1-4078-9a5f-dcde0c24da6a",
+              "name": "webp1",
+              "value": "={{ $json.webp1 }}",
+              "type": "string"
+            },
+            {
+              "id": "bd4f1127-c112-4bce-848d-e3d3106a1890",
+              "name": "gemini",
+              "value": "AIzaSyBScZTaPpXBCw5Hm6BzRAFmOfHvQ58q3uY",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        768
+      ],
+      "id": "14c154d5-e96b-4d1c-93f0-0875d9288ad2",
+      "name": "website"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        11008,
+        448
+      ],
+      "id": "71647f17-3d35-4b3d-b4c4-fa2590238958",
+      "name": "Wait for pintrest",
+      "webhookId": "043f512a-3879-4b58-b5be-85e6fe172d77"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w",
+          "mode": "list",
+          "cachedResultName": "bulk websites ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('website').first().json['sheet name'] }}",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "link generated",
+              "lookupValue": "={{ $('website').first().json.link }}/recipes/{{ $('post the requist1').item.json.data.slug }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        11232,
+        448
+      ],
+      "id": "67c014d1-cd60-4a0e-b012-c1e0c827f4c8",
+      "name": "Get row(s) in sheet1 *need update*",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5pGhYbBCZHu7oUrn",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ $('website').item.json.gemini }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": {{ JSON.stringify($json.promp) }}\n        },\n        {\n          \"inlineData\": {\n            \"mimeType\": \"{{ $json.mime_type }}\",\n            \"data\": \"{{ $json.base64_image }}\"\n          }\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.3,\n    \"maxOutputTokens\": 4096,\n    \"responseModalities\": [\"TEXT\", \"IMAGE\"],\n    \"imageConfig\": {\n      \"aspectRatio\": \"9:16\"\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        12992,
+        752
+      ],
+      "id": "6fc83d62-a16f-40be-9e0b-0422dc634d89",
+      "name": "generate feutured image2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "023aae6d-32cf-4bac-9cd6-a089927d317f",
+              "name": "promp",
+              "value": "=(EXTREME TALL PORTRAIT ONLY: 1000 pixels wide x 1500 pixels tall. RATIO 2:3. ABSOLUTELY NO SQUARE OR LANDSCAPE IMAGES. I repeat: 1000x1500 VERTICAL. You are an AI image generator producing new, original, Pinterest-optimized food images. Inputs: Recipe title: {{ $('title pintrest').first().json.content.parts[0].text }} Domain: www.{{ $('website').first().json.link.replace(\"https://\", \"\").replace(\"http://\", \"\") }} Output: DIMENSIONS LOCK: 1000 pixels wide x 1500 pixels tall (2:3). VERTICAL ONLY. RECIPE: Key ingredient prominent. Matches title exactly. Subtitle: 3 words - ONE line (e.g. ZESTY - GLUTEN-FREE - BAKED). LAYOUT (PROVEN CTR FORMULA): TOP 40%: Whole finished dish close-up (show abundance, tray/plate/pan full). MIDDLE 20%: Bold centered text block with title + 3-word subtitle. BOTTOM 40%: Close-up showing Texture reveal (cheese pull, sauce drip, fork bite, creamy center). FOOTER: Bottom center: www.{{ $('website').first().json.link.replace(\"https://\", \"\").replace(\"http://\", \"\") }} MOBILE READABLE size (large enough for phone screens). Not Bold font, same weight as subtitle. High contrast, perfectly centered. No transparency box. DESIGN MOOD: Color palette extracted from food. Clean background, shallow depth of field. Natural window light. Pinterest first aesthetic. Add ONLY: Recipe title (centered, bold, white band). 3-word subtitle not bold (separated, food-color band, regular weight). Domain footer (mobile readable) not bold. New original: Different plating/angle/background. Centered text, negative space. Natural light, food colors. ONE image. Professional Pinterest aspect ratio as 2:3 vertical -> 1000 x 1500.)\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        12160,
+        448
+      ],
+      "id": "efda9a3f-f11a-4c0d-9997-0c89fb095d16",
+      "name": "image pintrest promp"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Read the binary file from n8n's disk into memory. \n// Note: 'data' is the name of your binary channel from the HTTP request.\nconst imageBuffer = await this.helpers.getBinaryDataBuffer(0, 'data');\n\n// 2. Convert that raw buffer into a Base64 text string\nconst base64String = imageBuffer.toString('base64');\n\n// 3. Get the mime type (image type) directly from the binary data properties\nconst imageType = $input.first().binary.data.mimeType;\n\n// 4. Attach both the Base64 string and the image type to our JSON output\nreturn [{\n  json: {\n    ...$input.first().json,\n    base64_image: base64String,\n    mime_type: imageType\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12768,
+        448
+      ],
+      "id": "d6f3461f-59b2-46a2-9b22-849d770a32a5",
+      "name": "base 64 image"
+    },
+    {
+      "parameters": {
+        "url": "=https://thebusybaker.ca/wp-content/uploads/2019/07/ranch-roasted-chickpeas-4.jpg",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        12544,
+        448
+      ],
+      "id": "7b593233-13fb-4c94-ad79-619de1dfcbc3",
+      "name": "install image"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Loop through items\nconst results = [];\nfor (const item of $input.all()) {\n  const parts = item.json.candidates?.[0]?.content?.parts || [];\n  const imagePart = parts.find(part => part.inlineData);\n\n  if (imagePart) {\n    // 2. Convert Base64 to Binary Buffer\n    const imageBuffer = Buffer.from(imagePart.inlineData.data, 'base64');\n    \n    // 3. Prepare Binary Data for Upload\n    const binaryData = await this.helpers.prepareBinaryData(\n      imageBuffer,\n      'generated_pin.png',\n      imagePart.inlineData.mimeType\n    );\n\n    results.push({\n      json: {\n        success: true,\n        original_prompt: item.json.prompt || \"image\"\n      },\n      binary: {\n        data: binaryData\n      }\n    });\n  }\n}\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13376,
+        448
+      ],
+      "id": "69c895ed-8171-4ad0-b8fe-47dea084264e",
+      "name": "1. Prepare Binary"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1t8B2GDhA7OSAf5sQ_f_q_O_V-4A0XrZLX-zm37ZKpWU",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('website').first().json['sheet name'] }}",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        14080,
+        448
+      ],
+      "id": "2d2d5300-ced0-4d19-bd4f-bf806e030661",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5pGhYbBCZHu7oUrn",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all incoming items (the rows)\nconst allBoards = $input.all().map(item => item.json);\n\n// Return them as a single stringified JSON list so the AI can read it easily\nreturn {\n  json: {\n    // We create a clean string list like: \"Name: ID\"\n    available_boards_string: allBoards.map(b => `Board Name: \"${b['bord name']}\", ID: ${b['bord id']}`).join('\\n'),\n    // We also keep the raw array just in case\n    available_boards_array: allBoards\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        14304,
+        448
+      ],
+      "id": "5c9a8e67-30e2-4793-b251-924204903868",
+      "name": "all bord"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "f6860100-ab24-46ba-9e2e-70d4461492b6",
+              "leftValue": "={{ $json.output.is_valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        8832,
+        464
+      ],
+      "id": "2dd3a3dd-3ecd-4319-9b6a-e7f70b9b4ee5",
+      "name": "Is Recipe Valid?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w",
+          "mode": "list",
+          "cachedResultName": "bulk websites ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('website').first().json['sheet name'] }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get row(s) in sheet').first().json.row_number }}",
+            "state": "errur spy"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "SPY Title",
+              "displayName": "SPY Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Anotation",
+              "displayName": "Anotation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SPY PIN Image",
+              "displayName": "SPY PIN Image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "link generated",
+              "displayName": "link generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated",
+              "displayName": "image generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 2",
+              "displayName": "image generated 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 3",
+              "displayName": "image generated 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 4",
+              "displayName": "image generated 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        8992,
+        800
+      ],
+      "id": "40f025c5-ebc9-4147-975f-f8fe6737790a",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5pGhYbBCZHu7oUrn",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "deepseek-v3.1:671b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        9952,
+        880
+      ],
+      "id": "0ace6798-e846-47b1-bf76-284f6ce63af8",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "LxGW9AneirzbfAQu",
+          "name": "test izooco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following input and determine if it represents a real, valid recipe.\n\nSPY Title: {{ $json['SPY Title'] }}\nAnnotation/Keywords: {{ $json['Anotation'] }}\n\nReturn ONLY the word TRUE or FALSE. No other text.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a recipe validator and adapter.\nYour only job is to analyze a title and keywords to determine if they refer to a real, specific, cookable recipe dish (even if phrased as \"recipes\" plural or \"easy [dish]\"), then make it family-safe by applying the exact substitutions below systematically.\n\n### VALIDATION & MANDATORY SUBSTITUTION RULES\n\n1. If the title refers to a real, identifiable recipe or common dish (ex: \"Pasta Salad with Tomatoes\", \"Pork Chops\") → return TRUE and adapt automatically using the exact replacements below. Accept plurals like \"Recipes\" or \"easy [dish] recipes\".\n2. If it's vague/generic/not a dish (ex: \"dinner ideas\", \"healthy food\") → return FALSE.\n\n### SYSTEMATIC & MANDATORY SUBSTITUTIONS\n\nReplace systematically and exactly:\n\n* Pork → lamb or beef\n* Bacon, ham, prosciutto, pancetta, speck → turkey ham or beef bacon\n* Pork sausage, Italian sausage, salami, mortadella → beef sausage or chicken sausage\n* Wine (red, white, cooking wine) → grape juice, vegetable broth or chicken stock\n* Brandy, rum, whiskey, vodka, beer, lager, stout, champagne, spirits, Kahlua, piña colada, limoncello, Marsala, mirin, Shaoxing wine → fruit juice, vinegar or water\n* Lard → butter, ghee or vegetable oil\n* Wine vinegar, Marsala → cider vinegar or lemon juice\n* Alcohol desserts (rum balls, bourbon cake, whiskey truffles, rum raisin ice cream, Irish cream, etc.) → alcohol-free versions with vanilla, caramel or fruit\n* Holiday terms (Christmas, Thanksgiving, Valentine's, Easter, Halloween) → winter recipes, holiday season dishes, autumn meals, comfort food\n\n### STRICT OUTPUT RULES\n\nOutput one single word:\nTRUE or FALSE\nNo explanations, no additional text.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1184,
+        640
+      ],
+      "id": "08212329-cf7b-43e5-b100-b804d0c22913",
+      "name": "Recipe Validator",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = $input.first().json.output?.trim().toUpperCase();\nconst isValid = output === 'TRUE';\n\nreturn [{\n  json: {\n    ...($input.first().json),\n    is_valid_recipe: isValid,\n    validation_result: isValid ? 'TRUE' : 'FALSE'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1536,
+        640
+      ],
+      "id": "d0227f5a-48f4-4476-bc56-64265180b8c4",
+      "name": "Parse Validation Result"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-valid",
+              "leftValue": "={{ $json.validation_result }}",
+              "rightValue": "TRUE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        640
+      ],
+      "id": "76d8d5bb-4251-4425-a559-39860e8afb5c",
+      "name": "Is Valid Recipe?"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        864
+      ],
+      "id": "6293bce4-7bd1-467f-ad0a-d7cc18f7e4ac",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ertPG9dPp46CyI9u",
+          "name": "pro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w",
+          "mode": "list",
+          "cachedResultName": "bulk websites ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('website').first().json['sheet name'] }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get row(s) in sheet').first().json.row_number }}",
+            "state": "errur spy"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "SPY Title",
+              "displayName": "SPY Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Anotation",
+              "displayName": "Anotation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SPY PIN Image",
+              "displayName": "SPY PIN Image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "link generated",
+              "displayName": "link generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated",
+              "displayName": "image generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 2",
+              "displayName": "image generated 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 3",
+              "displayName": "image generated 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 4",
+              "displayName": "image generated 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1984,
+        736
+      ],
+      "id": "e6124f59-8a6c-4d26-ba2c-7c26ed94776f",
+      "name": "Update row in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5pGhYbBCZHu7oUrn",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2272,
+        864
+      ],
+      "id": "8c244d03-8251-4fe1-a0bd-d371afa62a39",
+      "name": "Wait",
+      "webhookId": "9b5c4d98-f8f7-420f-a0f9-84cf82040e03"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=pin title\n\nCreate a clear and engaging Pinterest Pin title for \n  •  Title: ['{{ $('AI Blog Generator V2').item.json.output.title }}']\n  •  Keywords: [{{ $('AI Blog Generator V2').item.json.output.focus_keyword }}]\n. Keep it under 100 characters, include common Pinterest search keywords, and make it appeal to users looking for new recipe ideas\n\nYour response should be 2–3 concise sentences with rich context, subtle emotion, and a gentle CTA.\n\nreturn only the title"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        11808,
+        448
+      ],
+      "id": "9a77e9bf-cad9-4cb4-b6fa-8a8759c86c55",
+      "name": "title pintrest",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ertPG9dPp46CyI9u",
+          "name": "pro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=pin description\n\nCreate a description for Pinterest based on the title and keywords below. Follow Pinterest SEO guidelines: natural tone, no hard sells, and elegant phrasing.\n  •  Title: ['{{ $('AI Blog Generator V2').item.json.output.title }}']\n  •  Keywords: [{{ $('AI Blog Generator V2').item.json.output.focus_keyword }}]\nYour response should be 2–3 concise sentences with rich context, subtle emotion, and a gentle CTA.\n\n## Final Notes\n•⁠  ⁠Do not include hashtags unless they add specific SEO value\n•⁠  ⁠Write the description in short, plain English. \n•⁠  ⁠Do not use emojis, stars, asterisks, hearts, arrows, decorative characters, or special symbols of any kind. \n•⁠  ⁠Do not use bold, italics, or any type of formatting. \n•⁠  ⁠Output plain text only.\n•⁠  ⁠The description length must not exceed 750 characters."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        11456,
+        448
+      ],
+      "id": "2871739c-f480-4082-85f6-898564d5da86",
+      "name": "discription pintrest",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ertPG9dPp46CyI9u",
+          "name": "pro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 6
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        640
+      ],
+      "id": "32f8c485-effc-44c1-998e-03f964ccd6b0",
+      "name": "Wait1",
+      "webhookId": "297d065c-6f62-4555-a119-7664c896d066"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.convertio.co/convert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"apikey\": \"{{ $('website').item.json.webp1 }}\",\n  \"input\": \"base64\",\n  \"file\": \"{{ $json.base64_image }}\",\n  \"filename\": \"image1\",\n  \"outputformat\": \"webp\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4768,
+        -64
+      ],
+      "id": "5c166f18-a864-40fe-aed4-45d1bf154e2e",
+      "name": "Convert to WebP4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.convertio.co/convert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"apikey\": \"{{ $('website').item.json.webp1 }}\",\n  \"input\": \"base64\",\n  \"file\": \"{{ $json.base64_image }}\",\n  \"filename\": \"image1\",\n  \"outputformat\": \"webp\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4768,
+        320
+      ],
+      "id": "9b169010-7cf9-4343-ba67-c59bea089fd4",
+      "name": "Convert to WebP5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.convertio.co/convert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"apikey\": \"{{ $('website').item.json.webp1 }}\",\n  \"input\": \"base64\",\n  \"file\": \"{{ $json.base64_image }}\",\n  \"filename\": \"image1\",\n  \"outputformat\": \"webp\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4896,
+        864
+      ],
+      "id": "0236bf0a-a9dc-4e2f-8986-2089e0913bbc",
+      "name": "Convert to WebP6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.convertio.co/convert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"apikey\": \"{{ $('website').item.json.webp1 }}\",\n  \"input\": \"base64\",\n  \"file\": \"{{ $json.base64_image }}\",\n  \"filename\": \"image1\",\n  \"outputformat\": \"webp\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4752,
+        1552
+      ],
+      "id": "f567ffd0-604b-451d-9507-3ebe86c735a7",
+      "name": "Convert to WebP7"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('website').first().json.link }}/api/wp-json/wp/v2/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "per_page",
+              "value": "40"
+            },
+            {
+              "name": "_fields",
+              "value": "title,link"
+            },
+            {
+              "name": "status",
+              "value": "publish"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "20ee6e10-0ea4-4077-be51-5736575ef6a0",
+      "name": "Get Existing Posts1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        7952,
+        288
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "yXtfZULv4dtwsObe",
+          "name": "wordpress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the list of posts from the previous node\nconst posts = $input.all();\n\n// Create a simple text list of titles and links\nconst linksList = posts.map(post => {\n  return `- ${post.json.title.rendered}: ${post.json.link}`;\n}).join('\\n');\n\n// Return it as a single field \"existing_posts_list\"\nreturn [{\n  json: {\n    existing_posts_list: linksList,\n    total_posts: posts.length\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8176,
+        288
+      ],
+      "id": "2575b94c-1bb5-44e6-85eb-112c66b049c1",
+      "name": "internal links1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"is_valid\": true,\n  \"reason\": \"Reason if invalid\",\n  \"title\": \"SEO Optimized Title\",\n  \"meta_description\": \"Description\",\n  \"focus_keyword\": \"Keyword\",\n  \"category_id\": 0,\n  \"article_html\": \"HTML Content\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        8592,
+        416
+      ],
+      "id": "6625cb2e-16c8-408e-9772-20106fa144f0",
+      "name": "Parser Blog Gen V2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLE:\nYou are MAX PREMIUM HUMAN MODE - An expert food editor who only uses ingredients and methods that fully comply with the rules listed below. Your goal is to turn ANY input keyword into a high-quality, SEO-optimized food article that follows these rules 100%.\n\nINPUT DATA:\n- Main Keyword: {{ $('Get row(s) in sheet').first().json.Anotation }}\n- Categories: {{ $('category').first().json.categories_text }}\n\nIMAGE ASSETS (IMPORTANT RULES FOR IMAGES):\n- Feature Image URL: {{ $('all picture').first().json.feature.url }}\n- Ingredients Image URL: {{ $('all picture').first().json.ingredients.url }}\n- Cooking Image URL: {{ $('all picture').first().json.cooking.url }}\n- Final Image URL: {{ $('all picture').first().json.final.url }}\n\nIMAGE EMBEDDING RULES (MANDATORY):\n- You MUST check each URL before using it.\n- If a URL is a non-empty string (e.g. starts with \"http\" or \"/uploads\"), embed it as:\n  <figure><img src=\"THE_URL\" alt=\"Description\"></figure>\n- If a URL is empty (\"\"), null, or missing — DO NOT create an <img> tag for it at all.\n- Never write <img src=\"\"> or <figure><img src=\"\"></figure> under any circumstance.\n- Only embed images you actually have a valid URL for.\n- Place valid images contextually: Feature at the very top, Ingredients before the list, Cooking before instructions, Final before Expert Tips.\n- If only 1 image exists, place it at the top only. If 2 exist, top + one contextual. Adapt naturally.\n\nINTERNAL LINKS AVAILABLE ({{ $('internal links1').first().json.total_posts }} posts):\n{{ $('internal links1').first().json.existing_posts_list }}\n\n---\n\n### COMPLIANCE RULES (MANDATORY - APPLY TO EVERY ARTICLE)\nAll content, titles, meta descriptions, and article body MUST follow these rules. Zero exceptions.\n\nIMPORTANT BANNED WORD RULE:\n- The output MUST NOT contain (in any field, any case) the words:\n  \"halal\", \"haram\", \"kosher\", \"islam\", \"muslim\", \"sharia\", \"religion\",\n  \"pork\", \"bacon\", \"ham\", \"prosciutto\", \"pancetta\", \"speck\", \"lard\".\n- Do NOT use these words even in titles, headings, alt text, internal links, FAQ, examples, or explanations.\n- You still MUST follow all ingredient and method rules below internally, but you must NEVER mention any of these words in the generated JSON.\n\nIngredient & Method Rules (you must ALWAYS apply these rules, even if the keyword suggests otherwise):\n- Ensure all recipes are suitable for a wide audience — no alcohol, no pork, and no intoxicants in any form.\n\nApply the following replacements and removals silently (do not mention that you are replacing or removing ingredients):\n\n- Remove wine (red, white, or cooking wine) → use grape juice, vegetable broth, or stock instead.\n- Remove brandy, rum, whiskey, vodka, beer, lager, stout, liquor, champagne, Kahlua, Piña colada, limoncello, Marsala, Mirin, Shaoxing wine → use fruit juice, vinegar, or water.\n- Replace pork → with lamb or beef.\n- Replace bacon, ham, prosciutto, pancetta, speck → with turkey ham or beef bacon.\n- Replace pork sausage, Italian sausage, salami, mortadella → with beef or chicken sausage.\n- Replace lard → with butter, ghee, or vegetable oil.\n- Replace wine vinegar, Marsala wine → with apple cider vinegar or lemon juice.\n- Remove desserts containing alcohol (rum balls, bourbon cake, whiskey truffles, ice cream with alcohol flavorings like rum & raisin or Irish cream) → make alcohol-free versions using vanilla, caramel, or fruit flavors instead.\n\nSilent reinterpretation of the keyword:\n- If the keyword contains one of the banned meat words (for example \"pork\", \"bacon\", \"ham\"), reinterpret it as a similar dish made with allowed meats (such as beef, lamb, chicken or turkey).\n- Write the entire article using only the allowed meat name.\n- Do NOT say that you replaced anything and do NOT mention the original word.\n\nLanguage & Naming Rules:\n- Avoid using holiday names such as Christmas, Thanksgiving, Valentine’s, Easter, Halloween, etc.\n- Use neutral seasonal phrasing like “winter recipes,” “festive season,” “fall dishes,” or “cozy cold-weather meals.”\n- Never mention alcohol, pork, or other non-permissible ingredients anywhere — not even as “alternatives to avoid”.\n- All recipes must be suitable for a wide family audience.\n\n---\n\n### CONTENT GENERATION RULES\n1. Always Proceed:\n   - Do not validate or reject the keyword.\n   - If the keyword is generic (e.g., \"Food\"), create an \"Ultimate Guide to [Keyword]\" or a popular recipe related to it.\n\n2. Strict Guidelines:\n   - No alcohol. No pork. No intoxicants in any form.\n   - Apply all Ingredient & Method Rules exactly.\n   - Do NOT explain these rules in the article. The article must read like a normal mainstream food article.\n\n3. Structure:\n   - Use this structure:\n     - H1\n     - Engaging Intro\n     - Ingredients List\n     - Step-by-Step Instructions (H2)\n     - Expert Tips\n     - Short FAQ section\n\n4. Images:\n   - You MUST embed the provided image URLs using exactly this HTML structure:\n     <figure><img src=\"URL_HERE\" alt=\"Description\"></figure>\n   - Place them contextually (Feature at top, Ingredients before the ingredients list, etc.).\n\n5. Internal Links:\n   - You MUST naturally include 3–5 internal links from the INTERNAL LINKS AVAILABLE list above.\n   - Choose only links that are topically relevant to the article content.\n   - Embed them as anchor tags inside the article body: <a href=\"POST_URL\">Anchor Text</a>\n   - Use descriptive, natural anchor text (not the raw post title).\n   - Spread the links across different sections (intro, body, tips, FAQ) — do NOT cluster them all in one place.\n   - If no links are relevant, you may use fewer than 3, but always try to include at least 2.\n\nTitle and focus keyword behavior:\n- The field \"focus_keyword\" must copy exactly the input value\n  {{ $('Get row(s) in sheet').first().json.Anotation }} without modification.\n- If this focus keyword contains a banned word (like \"pork\", \"bacon\", \"ham\"),\n  you may keep it ONLY in \"focus_keyword\" for technical/SEO purposes,\n  but you MUST NOT use that banned word in \"title\" or in \"article_html\".\n- For the \"title\", rewrite any banned word using an allowed alternative\n  (for example: replace \"pork\" with \"beef\", \"lamb\", \"chicken\" or \"protein\")\n  while keeping the overall structure of the original phrase.\n\n---\n\n### OUTPUT SELF-CHECK (MANDATORY)\nBefore returning the final JSON, you MUST check your entire output string\n(title, meta_description, focus_keyword value, article_html, reason, and any other field) and ensure:\n\n- It strictly respects all Ingredient & Method Rules.\n- It does NOT contain any of these banned words (case-insensitive, anywhere) in title, meta_description or article_html:\n  \"halal\", \"haram\", \"kosher\", \"islam\", \"muslim\", \"sharia\", \"religion\",\n  \"pork\", \"bacon\", \"ham\", \"prosciutto\", \"pancetta\", \"speck\", \"lard\".\n- Banned words are tolerated ONLY inside \"focus_keyword\" if they already exist in the input, and nowhere else.\n\nIf ANY banned word is present where it is not allowed:\n- Do NOT return the JSON.\n- Regenerate a completely new answer internally and run the same check again.\n- Repeat until there is ZERO forbidden occurrence in the entire JSON.\n- Never mention in the output that you performed this check or that you regenerated.\n\n---\n\n### FINAL OUTPUT FORMAT\nReturn ONLY a single JSON object. No markdown blocks, no conversational filler.\nYou MUST set \"is_valid\" to true for every response.\nAll fields in the JSON — title, meta_description, focus_keyword, and article_html — MUST follow all rules above and MUST NOT contain any banned word outside the focus_keyword.\n\n{\n  \"is_valid\": true,\n  \"reason\": \"Successfully generated\",\n  \"title\": \"SEO Optimized Title\",\n  \"meta_description\": \"Compelling meta description under 160 chars\",\n  \"focus_keyword\": \"{{ $('Get row(s) in sheet').first().json.Anotation }}\",\n  \"category_id\": {{ $('category').first().json.category_id || 0 }},\n  \"article_html\": \"<h1>...</h1> content here\"\n}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        8448,
+        288
+      ],
+      "id": "79ac2c40-cb7c-433b-a762-ccf30212a962",
+      "name": "AI Blog Generator V2",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "588218ca-40c0-482e-832b-5b64a158c101",
+              "name": "link",
+              "value": "recipebygrace.com",
+              "type": "string"
+            },
+            {
+              "id": "4adda0db-852c-4401-9b46-d20f0c5a14ad",
+              "name": "password",
+              "value": "rcp_7a0c593a983a514f44937b6e07fe5c988cfcec8ec473c5dc",
+              "type": "string"
+            },
+            {
+              "id": "8bab04bd-4c6d-42d0-830c-7b8c441e72ed",
+              "name": "webp",
+              "value": "bdb6b74132d8d41fff6e28df7ee61aa3",
+              "type": "string"
+            },
+            {
+              "id": "b7b5ec72-e7be-4698-903e-ce590f4d4300",
+              "name": "webp1",
+              "value": "5b75b43c9808ff8eeaa3225837f5245c",
+              "type": "string"
+            },
+            {
+              "id": "f939ac21-3d37-4ef0-8c64-7bdc2fc8d299",
+              "name": "olama",
+              "value": "4c273b0514154084b308dc0de597750e.yj6v-BCsXrr0e7HKWgmMprRG",
+              "type": "string"
+            },
+            {
+              "id": "31ddaf4b-27f5-4427-ab9b-4f3126009da7",
+              "name": "make",
+              "value": "https://hook.eu1.make.com/drlxrcq64km32ke1w5yfhf6g4szna0bh",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        736
+      ],
+      "id": "d668cff5-eb74-48d2-ab46-7d7f8c959587",
+      "name": "oocki"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "89320603-bf79-4cc8-bc1c-6b1156804142",
+              "leftValue": "={{$json.error}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2000,
+        512
+      ],
+      "id": "bb06e42b-6858-4d04-a230-0d8810930a2e",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        736
+      ],
+      "id": "5165d250-2c6b-4374-a6e7-cbc2308fb725",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('website').item.json.link }}/api/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "rcp_d969c6b600e1192f1a890a6c8d42dddc950a65112b2ae4fd"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{$('Get row(s) in sheet').item.json[\"SPY Title\"].replace(/[^a-zA-Z0-9]/g, '-').toLowerCase() }}_feururd"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6144,
+        -208
+      ],
+      "id": "9b086cc7-589a-46ad-ba84-bc6ca613167a",
+      "name": "upload feature image"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('website').first().json.link }}/api/recipes",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-Key",
+              "value": "={{ $('website').first().json.password }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        10064,
+        448
+      ],
+      "id": "8f2ede9d-c278-4acc-876f-020dd48496ff",
+      "name": "post the requist1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.output.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5968,
+        240
+      ],
+      "id": "cee357f0-cd89-40e8-b472-63f79b1e788a",
+      "name": "Download WebP Image4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('website').item.json.link }}/api/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "rcp_d969c6b600e1192f1a890a6c8d42dddc950a65112b2ae4fd"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{$('Get row(s) in sheet').item.json[\"SPY Title\"].replace(/[^a-zA-Z0-9]/g, '-').toLowerCase() }}_ingredients"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6192,
+        240
+      ],
+      "id": "bc20a1be-790d-4000-937e-4c37ee49b3af",
+      "name": "upload feature image4"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.output.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5968,
+        640
+      ],
+      "id": "39563727-e6fc-4a25-b95c-c33f41c0ad2e",
+      "name": "Download WebP Image5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('website').item.json.link }}/api/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "rcp_d969c6b600e1192f1a890a6c8d42dddc950a65112b2ae4fd"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{$('Get row(s) in sheet').item.json[\"SPY Title\"].replace(/[^a-zA-Z0-9]/g, '-').toLowerCase() }}_cooking"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6192,
+        640
+      ],
+      "id": "3e729fc6-a6c9-498c-acce-129fb19f9589",
+      "name": "upload feature image5"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.output.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5856,
+        1376
+      ],
+      "id": "4620c719-52cb-4443-9dc3-fb5004ce180f",
+      "name": "Download WebP Image6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('website').item.json.link }}/api/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "rcp_d969c6b600e1192f1a890a6c8d42dddc950a65112b2ae4fd"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{$('Get row(s) in sheet').item.json[\"SPY Title\"].replace(/[^a-zA-Z0-9]/g, '-').toLowerCase() }}_final"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6080,
+        1376
+      ],
+      "id": "a0430278-a90a-48ba-b6c1-bd2eeeda42ef",
+      "name": "upload feature image6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('website').first().json.link }}/api/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "rcp_d969c6b600e1192f1a890a6c8d42dddc950a65112b2ae4fd"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{$('Get row(s) in sheet').first().json[\"SPY Title\"].replace(/[^a-zA-Z0-9]/g, '-').toLowerCase() }}_pintrest"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        13648,
+        448
+      ],
+      "id": "5a2caed5-411a-40a3-ba14-fec50acbd887",
+      "name": "upload feature image1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('website').first().json.make }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"Media URL\": \"{{ $('website').first().json.link }}{{ $('upload feature image1').first().json.url }}\",\n  \"Pinterest board\": \"test\",\n  \"Board ID\": \"{{ $json.text }}\",\n  \"Title\": \"{{ $('title pintrest').first().json.content.parts[0].text }}\",\n  \"Description\": \"{{ $('discription pintrest').first().json.content.parts[0].text }}\",\n  \"Keywords\": \"\",\n  \"Link\": \"{{ $('website').first().json.link }}/recipes/{{ $('post the requist1').first().json.data.slug }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        15104,
+        544
+      ],
+      "id": "91664297-4ec1-42cc-b855-05a667af9d10",
+      "name": "3. Send Link to Make",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "22VN2YuiX3wEHk2j",
+          "name": "Header Auth account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w",
+          "mode": "list",
+          "cachedResultName": "bulk websites ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('website').first().json['sheet name'] }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "done",
+            "row_number": "={{ $('Get row(s) in sheet').first().json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "SPY Title",
+              "displayName": "SPY Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Anotation",
+              "displayName": "Anotation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SPY PIN Image",
+              "displayName": "SPY PIN Image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "link generated",
+              "displayName": "link generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated",
+              "displayName": "image generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 2",
+              "displayName": "image generated 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 3",
+              "displayName": "image generated 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 4",
+              "displayName": "image generated 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        15328,
+        544
+      ],
+      "id": "6c81b994-2183-4298-9b3e-908c1c794b6f",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5pGhYbBCZHu7oUrn",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a90fc52e-47d5-4023-bb8c-2174b22ad592",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "=undefined",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        14880,
+        448
+      ],
+      "id": "8355c0a0-31cd-4819-a3dc-06b36e504258",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w",
+          "mode": "list",
+          "cachedResultName": "bulk websites ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JzFEOQ38OWpnX4AhjwbpypKXICEGKDhxU7LxXlJG46w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('website').first().json['sheet name'] }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "errur pintrest",
+            "row_number": "={{ $('Get row(s) in sheet').first().json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "SPY Title",
+              "displayName": "SPY Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Anotation",
+              "displayName": "Anotation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SPY PIN Image",
+              "displayName": "SPY PIN Image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "link generated",
+              "displayName": "link generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated",
+              "displayName": "image generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 2",
+              "displayName": "image generated 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 3",
+              "displayName": "image generated 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "image generated 4",
+              "displayName": "image generated 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        15104,
+        352
+      ],
+      "id": "68cfe87b-b9bf-41f5-92ed-464b27321ab9",
+      "name": "Update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5pGhYbBCZHu7oUrn",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=I have a pin with this Title: \"{{ $('Get row(s) in sheet').first().json['SPY Title'] }}\"\nAnd these Keywords: \"{{ $('Get row(s) in sheet').first().json.Anotation }}\"\n\nHere is my list of available Pinterest Boards:\n{{ $json.available_boards_string }}\n\nTask: Analyze the title and keywords, then choose the single most relevant Board ID from the list above.\nReturn ONLY the numeric ID. Do not write any other text.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.8,
+      "position": [
+        14528,
+        448
+      ],
+      "id": "7665b2be-f69c-4074-b6d1-511aca81b088",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ $('website').first().json.gemini }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": {{ JSON.stringify($json.promp) }}\n        },\n        {\n          \"inlineData\": {\n            \"mimeType\": \"{{ $json.mime_type }}\",\n            \"data\": \"{{ $json.base64_image }}\"\n          }\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.3,\n    \"maxOutputTokens\": 4096,\n    \"responseModalities\": [\"TEXT\", \"IMAGE\"],\n    \"imageConfig\": {\n      \"aspectRatio\": \"9:16\"\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        13008,
+        448
+      ],
+      "id": "aff10d16-fea3-4d94-a3d9-24579ac57180",
+      "name": "generate feutured image1"
+    }
+  ],
+  "connections": {
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "get json code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get json code": {
+      "main": [
+        [
+          {
+            "node": "spy image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "spy image1": {
+      "main": [
+        [
+          {
+            "node": "install image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "base 64 image1": {
+      "main": [
+        [
+          {
+            "node": "generate feutured image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "generate the image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "generate the image1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "generate the image2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "install image1": {
+      "main": [
+        [
+          {
+            "node": "promps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get the real image": {
+      "main": [
+        [
+          {
+            "node": "Convert to WebP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate feutured image": {
+      "main": [
+        [
+          {
+            "node": "get the real image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get the real image1": {
+      "main": [
+        [
+          {
+            "node": "Convert to WebP1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "promps": {
+      "main": [
+        [
+          {
+            "node": "base 64 image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate the image": {
+      "main": [
+        [
+          {
+            "node": "get the real image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get the real image2": {
+      "main": [
+        [
+          {
+            "node": "Convert to WebP2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate the image1": {
+      "main": [
+        [
+          {
+            "node": "get the real image2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get the real image3": {
+      "main": [
+        [
+          {
+            "node": "Convert to WebP3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate the image2": {
+      "main": [
+        [
+          {
+            "node": "get the real image3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "all picture": {
+      "main": [
+        [
+          {
+            "node": "get category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to WebP": {
+      "main": [
+        [
+          {
+            "node": "Wait Convert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to WebP4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Convert": {
+      "main": [
+        [
+          {
+            "node": "Check Convert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Convert": {
+      "main": [
+        [
+          {
+            "node": "Convert Done?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Done?": {
+      "main": [
+        [
+          {
+            "node": "Download WebP Image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait Convert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to WebP1": {
+      "main": [
+        [
+          {
+            "node": "Wait Convert1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to WebP5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Convert1": {
+      "main": [
+        [
+          {
+            "node": "Check Convert1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Convert1": {
+      "main": [
+        [
+          {
+            "node": "Convert Done?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Done?1": {
+      "main": [
+        [
+          {
+            "node": "Download WebP Image4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait Convert1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to WebP2": {
+      "main": [
+        [
+          {
+            "node": "Wait Convert2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to WebP6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Convert2": {
+      "main": [
+        [
+          {
+            "node": "Check Convert2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Convert2": {
+      "main": [
+        [
+          {
+            "node": "Convert Done?2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Done?2": {
+      "main": [
+        [
+          {
+            "node": "Download WebP Image5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait Convert2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to WebP3": {
+      "main": [
+        [
+          {
+            "node": "Wait Convert3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to WebP7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Convert3": {
+      "main": [
+        [
+          {
+            "node": "Check Convert3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Convert3": {
+      "main": [
+        [
+          {
+            "node": "Convert Done?3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Done?3": {
+      "main": [
+        [
+          {
+            "node": "Download WebP Image6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait Convert3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "all picture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download WebP Image": {
+      "main": [
+        [
+          {
+            "node": "upload feature image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get category": {
+      "main": [
+        [
+          {
+            "node": "category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Processing V2": {
+      "main": [
+        [
+          {
+            "node": "AI Data Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "category": {
+      "main": [
+        [
+          {
+            "node": "Get Existing Posts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Data Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Prepare Recipe Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Extract1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Data Extractor1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Recipe Card": {
+      "main": [
+        [
+          {
+            "node": "post the requist1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet1": {
+      "main": [
+        [
+          {
+            "node": "Wait for pintrest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "website": {
+      "main": [
+        []
+      ]
+    },
+    "Wait for pintrest": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1 *need update*",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1 *need update*": {
+      "main": [
+        [
+          {
+            "node": "discription pintrest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate feutured image2": {
+      "main": [
+        []
+      ]
+    },
+    "image pintrest promp": {
+      "main": [
+        [
+          {
+            "node": "install image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "base 64 image": {
+      "main": [
+        [
+          {
+            "node": "generate feutured image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "install image": {
+      "main": [
+        [
+          {
+            "node": "base 64 image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Prepare Binary": {
+      "main": [
+        [
+          {
+            "node": "upload feature image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "all bord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "all bord": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Recipe Valid?": {
+      "main": [
+        [
+          {
+            "node": "Wait Processing V2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Data Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Blog Generator V2",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recipe Validator": {
+      "main": [
+        [
+          {
+            "node": "Parse Validation Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Validation Result": {
+      "main": [
+        [
+          {
+            "node": "Is Valid Recipe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Valid Recipe?": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Recipe Validator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet4": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "title pintrest": {
+      "main": [
+        [
+          {
+            "node": "image pintrest promp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "discription pintrest": {
+      "main": [
+        [
+          {
+            "node": "title pintrest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Recipe Validator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to WebP4": {
+      "main": [
+        [
+          {
+            "node": "Wait Convert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to WebP5": {
+      "main": [
+        [
+          {
+            "node": "Wait Convert1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to WebP6": {
+      "main": [
+        [
+          {
+            "node": "Wait Convert2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to WebP7": {
+      "main": [
+        [
+          {
+            "node": "Wait Convert3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Existing Posts1": {
+      "main": [
+        [
+          {
+            "node": "internal links1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "internal links1": {
+      "main": [
+        [
+          {
+            "node": "AI Blog Generator V2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Blog Gen V2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Blog Generator V2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Blog Generator V2": {
+      "main": [
+        [
+          {
+            "node": "Is Recipe Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "oocki": {
+      "main": [
+        [
+          {
+            "node": "website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "oocki",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload feature image": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "post the requist1": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download WebP Image4": {
+      "main": [
+        [
+          {
+            "node": "upload feature image4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload feature image4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Download WebP Image5": {
+      "main": [
+        [
+          {
+            "node": "upload feature image5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload feature image5": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Download WebP Image6": {
+      "main": [
+        [
+          {
+            "node": "upload feature image6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload feature image6": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "upload feature image1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Send Link to Make": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "3. Send Link to Make",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate feutured image1": {
+      "main": [
+        [
+          {
+            "node": "1. Prepare Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {}
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d2edf06cb5e4e37b6a6ed0cd30a2121f346fa4234a6094a0bc1cc6713ee4c906"
+  }
+}
